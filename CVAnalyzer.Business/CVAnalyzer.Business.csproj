@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.11" />
+    <PackageReference Include="PdfPig" Version="0.1.13-alpha-20251115-aef0a" />
+    <PackageReference Include="System.Net.Http" Version="4.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\CVAnalyzer.Data\CVAnalyzer.Data.csproj" />
+        <ProjectReference Include="..\CVAnalyzer.DbLayer\CVAnalyzer.DbLayer.csproj" />
+        <ProjectReference Include="..\CVAnalyzer.Mappers\CVAnalyzer.Mappers.csproj" />
+        <ProjectReference Include="..\CVAnalyzer.Models\CVAnalyzer.Models.csproj" />
+    </ItemGroup>
+</Project>

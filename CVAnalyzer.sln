@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CVAnalyzer", "CVAnalyzer\CVAnalyzer.csproj", "{5DC26249-17C2-4753-8FA7-F0DA1F619947}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{744B2539-484A-45AB-8B6F-3AF5C5D0B707}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		Dockerfile = Dockerfile
+		.dockerignore = .dockerignore
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CVAnalyzer.DbLayer", "CVAnalyzer.DbLayer\CVAnalyzer.DbLayer.csproj", "{B744BEE9-300D-4EE6-A25A-AB9C0F851D5E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CVAnalyzer.Data", "CVAnalyzer.Data\CVAnalyzer.Data.csproj", "{50AC114D-73D8-4202-82DA-8FFF089EBA82}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CVAnalyzer.Business", "CVAnalyzer.Business\CVAnalyzer.Business.csproj", "{92EEC87A-2C8F-4CBC-B9A6-1819E21920B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CVAnalyzer.Mappers", "CVAnalyzer.Mappers\CVAnalyzer.Mappers.csproj", "{87C743FC-26FF-433F-8DAF-ABF64CFD7853}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CVAnalyzer.Models", "CVAnalyzer.Models\CVAnalyzer.Models.csproj", "{B7609558-BC1B-40F2-A28F-66D1D69BF8F2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5DC26249-17C2-4753-8FA7-F0DA1F619947}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DC26249-17C2-4753-8FA7-F0DA1F619947}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DC26249-17C2-4753-8FA7-F0DA1F619947}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DC26249-17C2-4753-8FA7-F0DA1F619947}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B744BEE9-300D-4EE6-A25A-AB9C0F851D5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B744BEE9-300D-4EE6-A25A-AB9C0F851D5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B744BEE9-300D-4EE6-A25A-AB9C0F851D5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B744BEE9-300D-4EE6-A25A-AB9C0F851D5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50AC114D-73D8-4202-82DA-8FFF089EBA82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50AC114D-73D8-4202-82DA-8FFF089EBA82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50AC114D-73D8-4202-82DA-8FFF089EBA82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50AC114D-73D8-4202-82DA-8FFF089EBA82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92EEC87A-2C8F-4CBC-B9A6-1819E21920B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92EEC87A-2C8F-4CBC-B9A6-1819E21920B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92EEC87A-2C8F-4CBC-B9A6-1819E21920B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92EEC87A-2C8F-4CBC-B9A6-1819E21920B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87C743FC-26FF-433F-8DAF-ABF64CFD7853}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87C743FC-26FF-433F-8DAF-ABF64CFD7853}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87C743FC-26FF-433F-8DAF-ABF64CFD7853}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87C743FC-26FF-433F-8DAF-ABF64CFD7853}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7609558-BC1B-40F2-A28F-66D1D69BF8F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7609558-BC1B-40F2-A28F-66D1D69BF8F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7609558-BC1B-40F2-A28F-66D1D69BF8F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7609558-BC1B-40F2-A28F-66D1D69BF8F2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,32 @@
+﻿version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cvanalyzer-api
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_URLS: "http://0.0.0.0:8080"
+      ConnectionStrings__SQLConnectionString: "Server=db,1433;Database=AnalyzerDB;User=sa;Password=Strong!Passw0rd;TrustServerCertificate=True"
+    ports:
+      - "8080:8080"
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: cvanalyzer-sql
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Strong!Passw0rd"
+      MSSQL_PID: Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+    platform: linux/amd64
+
+volumes:
+  mssql_data:
