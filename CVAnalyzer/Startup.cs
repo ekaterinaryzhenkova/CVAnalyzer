@@ -1,23 +1,19 @@
 using CVAnalyzer.Business;
 using CVAnalyzer.Business.background_services;
+using CVAnalyzer.Business.Clients;
+using CVAnalyzer.Business.Clients.Interfaces;
 using CVAnalyzer.Business.CV;
 using CVAnalyzer.Business.CV.Interfaces;
-using CVAnalyzer.Business.Interfaces;
 using CVAnalyzer.Business.Vacancy;
 using CVAnalyzer.Business.Vacancy.Interfaces;
 using CVAnalyzer.DbLayer;
 using CVAnalyzer.Mappers;
 using CVAnalyzer.Mappers.Interfaces;
-using CVAnalyzer.Models;
 using CVAnalyzer.Models.AIClient;
 using CVAnalyzer.Models.HhClient;
 using CVAnalyzer.Repositories;
 using CVAnalyzer.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Converters;
 
 namespace CVAnalyzer
@@ -51,16 +47,23 @@ namespace CVAnalyzer
                         .AllowAnyHeader());
             });
             
+            services.AddMemoryCache();
+            
             //ДОБАВЛЕНИЕ ЗАВИСИМОСТЕЙ В DI КОНТЕЙНЕР
-            services.AddScoped<ICreateCVbyPDFCommand, CreateCVbyPDFCommand>();
-            services.AddScoped<ICreateCVbyManualInputCommand, CreateCVbyManualInputCommand>();
-            services.AddScoped<ICVRepository, CVRepository>();
-            services.AddScoped<ICreateCVbyDocxCommand, CreateCvByDocxCommand>();
+            services.AddScoped<ICreateCbByPdfCommand, CreateCvByPdfCommand>();
+            services.AddScoped<ICreateCvByManualInputCommand, CreateCvByManualInputCommand>();
+            services.AddScoped<ICreateCvByDocxCommand, CreateCvByDocxCommand>();
+            services.AddScoped<IParseVacancyCommand, ParseVacancyCommand>();
+
             services.AddScoped<IAnalysisResponseMapper, AnalysisResponseMapper>();
             services.AddScoped<IDbAnalysisMapper, DbAnalysisMapper>();
-            services.AddScoped<IParseVacancyCommand, ParseVacancyCommand>();
+
+            services.AddScoped<ICVRepository, CVRepository>();
             services.AddScoped<IAnalysisRepository, AnalysisRepository>();
             services.AddScoped<IPromptRepository, PromptRepository>();
+            
+            services.AddScoped<IPromptService, PromptService>();
+
                 
             services.AddHttpClient<IAiClient, AiClient>()
                 .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
@@ -80,6 +83,7 @@ namespace CVAnalyzer
             
             services.AddHostedService<AiTokenRefreshService>();
             services.AddHostedService<HhTokenRefreshService>();
+            
             services.AddSingleton<IAiTokenSettings, AiTokenSettings>();
             services.AddSingleton<IHhTokenSettings, HhTokenSettings>();
             

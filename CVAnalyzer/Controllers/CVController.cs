@@ -1,6 +1,5 @@
 using CVAnalyzer.Business;
 using CVAnalyzer.Business.CV.Interfaces;
-using CVAnalyzer.Business.Interfaces;
 using CVAnalyzer.DbLayer.Models;
 using CVAnalyzer.Models;
 using CVAnalyzer.Models.OperationResultResponse;
@@ -29,7 +28,7 @@ namespace CVAnalyzer.Controllers
         /// </summary>
         [HttpPost("pdf")]
         public async Task<OperationResultResponse<AnalysisResponse>> CreateByPdfAsync(
-            [FromServices] ICreateCVbyPDFCommand command,
+            [FromServices] ICreateCbByPdfCommand command,
             [FromForm] IFormFile uploadedFile)
         {
             return await command.ExecuteAsync(uploadedFile);
@@ -40,7 +39,7 @@ namespace CVAnalyzer.Controllers
         /// </summary>
         [HttpPost("docx")]
         public async Task<OperationResultResponse<AnalysisResponse>> CreateByDocxAsync(
-            [FromServices] ICreateCVbyDocxCommand command,
+            [FromServices] ICreateCvByDocxCommand command,
             [FromForm] IFormFile uploadedFile)
         {
             return await command.ExecuteAsync(uploadedFile);
@@ -51,7 +50,7 @@ namespace CVAnalyzer.Controllers
         /// </summary>
         [HttpPost("manual")]
         public async Task<OperationResultResponse<AnalysisResponse>> CreateByManualAsync(
-            [FromServices] ICreateCVbyManualInputCommand command,
+            [FromServices] ICreateCvByManualInputCommand command,
             [FromBody][Required] ManualCvRequest manualCvRequest)
         {
             return await command.ExecuteAsync(manualCvRequest);

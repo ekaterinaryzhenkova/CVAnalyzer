@@ -5,7 +5,7 @@ using CVAnalyzer.Models.Responses;
 
 namespace CVAnalyzer.Business.CV.Interfaces
 {
-    public interface ICreateCVbyManualInputCommand
+    public interface ICreateCvByManualInputCommand
     {
         Task<OperationResultResponse<AnalysisResponse>> ExecuteAsync(ManualCvRequest manualCvRequest);
     }

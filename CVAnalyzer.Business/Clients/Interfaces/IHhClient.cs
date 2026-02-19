@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace CVAnalyzer.Business.Interfaces
+namespace CVAnalyzer.Business.Clients.Interfaces
 {
     public interface IHhClient
     {

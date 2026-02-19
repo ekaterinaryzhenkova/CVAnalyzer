@@ -1,11 +1,12 @@
-﻿using CVAnalyzer.Business.CV.Interfaces;
-using CVAnalyzer.Business.Interfaces;
+﻿using CVAnalyzer.Business.Clients.Interfaces;
+using CVAnalyzer.Business.CV.Interfaces;
 using CVAnalyzer.Mappers.Interfaces;
 using CVAnalyzer.Models;
 using CVAnalyzer.Models.OperationResultResponse;
 using CVAnalyzer.Models.Responses;
 using CVAnalyzer.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text;
 using UglyToad.PdfPig;
@@ -13,19 +14,20 @@ using UglyToad.PdfPig.Content;
 
 namespace CVAnalyzer.Business.CV;
 
-public class CreateCVbyPDFCommand(
+public class CreateCvByPdfCommand(
     IAnalysisResponseMapper responseMapper,
     IDbAnalysisMapper dbAnalysisMapper,
     IAnalysisRepository analysisRepository,
-    IPromptRepository promptRepository,
-    IAiClient aiClient) 
-    : ICreateCVbyPDFCommand
+    IPromptService promptService,
+    IAiClient aiClient,
+    ILogger<CreateCvByPdfCommand> logger) 
+    : ICreateCbByPdfCommand
 {
     public async Task<OperationResultResponse<AnalysisResponse>> ExecuteAsync(IFormFile uploadedFile)
     {
         string cv = (await ExtractTextAsync(uploadedFile)).ParsedText;
         
-        string? template = await promptRepository.GetAsync("CvAnalysis");
+        string? template = await promptService.GetAsync("CvAnalysis");
 
         if (template is null)
         {
@@ -52,12 +54,14 @@ public class CreateCVbyPDFCommand(
         }
         catch (HttpRequestException ex)
         {
+            logger.LogError(ex.Message);
             return new OperationResultResponse<AnalysisResponse>(
                 ex.Message,
                 ResultStatus.ExternalServerError);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            logger.LogError(ex.Message);
             return new OperationResultResponse<AnalysisResponse>(
                 "Unexpected error.",
                 ResultStatus.InternalServerError);
