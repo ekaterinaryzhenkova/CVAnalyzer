@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace CVAnalyzer.Business.CV.Interfaces
 {
-    public interface ICreateCVbyDocxCommand
+    public interface ICreateCvByDocxCommand
     {
         Task<OperationResultResponse<AnalysisResponse>> ExecuteAsync(IFormFile uploadedFile);
     }

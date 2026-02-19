@@ -1,12 +1,16 @@
-using CVAnalyzer.Business.Interfaces;
+using CVAnalyzer.Business.Clients.Interfaces;
 using CVAnalyzer.Business.Vacancy.Interfaces;
 using CVAnalyzer.Models.OperationResultResponse;
 using CVAnalyzer.Models.Requests;
+using Microsoft.Extensions.Logging;
 using System.Net;
 
 namespace CVAnalyzer.Business.Vacancy
 {
-    public class ParseVacancyCommand(IHhClient hhClient) : IParseVacancyCommand
+    public class ParseVacancyCommand(
+        IHhClient hhClient,
+        ILogger<ParseVacancyCommand> logger)
+        : IParseVacancyCommand
     {
         public async Task<OperationResultResponse<string>> ExecuteAsync(VacancyRequest vacancy)
         {
@@ -40,12 +44,14 @@ namespace CVAnalyzer.Business.Vacancy
             }
             catch (HttpRequestException ex)
             {
+                logger.LogError(ex.Message);
                 return new OperationResultResponse<string>(
-                    ex.Message,
+                    "Error accessing an external server.",
                     ResultStatus.ExternalServerError);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                logger.LogError(ex.Message);
                 return new OperationResultResponse<string>(
                     "Unexpected error.",
                     ResultStatus.InternalServerError);

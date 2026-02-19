@@ -1,23 +1,25 @@
+using CVAnalyzer.Business.Clients.Interfaces;
 using CVAnalyzer.Business.CV.Interfaces;
-using CVAnalyzer.Business.Interfaces;
 using CVAnalyzer.Mappers.Interfaces;
 using CVAnalyzer.Models;
 using CVAnalyzer.Models.OperationResultResponse;
 using CVAnalyzer.Models.Requests;
 using CVAnalyzer.Models.Responses;
 using CVAnalyzer.Repositories.Interfaces;
+using Microsoft.Extensions.Logging;
 using System.Net;
 
 namespace CVAnalyzer.Business.CV
 {
-    public class CreateCVbyManualInputCommand(
+    public class CreateCvByManualInputCommand(
         ICVRepository repository,
         IAnalysisResponseMapper responseMapper,
         IDbAnalysisMapper dbAnalysisMapper,
         IAnalysisRepository analysisRepository,
-        IPromptRepository promptRepository,
-        IAiClient aiClient) 
-        : ICreateCVbyManualInputCommand
+        IPromptService promptService,
+        IAiClient aiClient,
+        ILogger<CreateCvByManualInputCommand> logger) 
+        : ICreateCvByManualInputCommand
     {
         public async Task<OperationResultResponse<AnalysisResponse>> ExecuteAsync(ManualCvRequest manualCvRequest)
         {
@@ -28,7 +30,7 @@ namespace CVAnalyzer.Business.CV
                         "Образование: " + manualCvRequest.Education + "\n" +
                         "О себе: " + manualCvRequest.AboutYourself;
                         
-            string? template = await promptRepository.GetAsync("CvAnalysis");
+            string? template = await promptService.GetAsync("CvAnalysis");
 
             if (template is null)
             {
@@ -55,12 +57,14 @@ namespace CVAnalyzer.Business.CV
             }
             catch (HttpRequestException ex)
             {
+                logger.LogError(ex.Message);
                 return new OperationResultResponse<AnalysisResponse>(
                     ex.Message,
                     ResultStatus.ExternalServerError);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                logger.LogError(ex.Message);
                 return new OperationResultResponse<AnalysisResponse>(
                     "Unexpected error.",
                     ResultStatus.InternalServerError);

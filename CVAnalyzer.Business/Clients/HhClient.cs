@@ -1,9 +1,9 @@
-using CVAnalyzer.Business.Interfaces;
+using CVAnalyzer.Business.Clients.Interfaces;
 using CVAnalyzer.Models.HhClient;
 using System.Net;
 using System.Net.Http.Headers;
 
-namespace CVAnalyzer.Business
+namespace CVAnalyzer.Business.Clients
 {
     public class HhClient(
         HttpClient httpClient,

@@ -12,8 +12,8 @@ namespace CVAnalyzer.Business.background_services
         IHhTokenSettings tokenSettings,
         IHttpClientFactory httpClientFactory,
         IOptions<HhApiOptions> options,
-        ILogger<HhTokenRefreshService> logger
-        ) : IHostedService
+        ILogger<HhTokenRefreshService> logger)
+        : IHostedService
     {
         private readonly HhApiOptions _apiOptions = options.Value;
 

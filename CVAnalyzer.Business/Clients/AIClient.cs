@@ -1,11 +1,10 @@
-using CVAnalyzer.Business.Interfaces;
-using CVAnalyzer.Models;
+using CVAnalyzer.Business.Clients.Interfaces;
 using CVAnalyzer.Models.AIClient;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace CVAnalyzer.Business
+namespace CVAnalyzer.Business.Clients
 {
     public class AiClient(
         HttpClient httpClient,
