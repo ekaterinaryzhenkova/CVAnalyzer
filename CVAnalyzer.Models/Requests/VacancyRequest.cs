@@ -2,9 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CVAnalyzer.Models.Requests
 {
-    public struct VacancyRequest
+    public record VacancyRequest
     {
         [Required]
-        public string link { get; init; }
-    }
+        public string Link { get; set; }
+    };
 }

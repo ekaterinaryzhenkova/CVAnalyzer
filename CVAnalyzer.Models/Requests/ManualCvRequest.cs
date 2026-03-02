@@ -2,24 +2,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CVAnalyzer.Models.Requests
 {
-    public struct ManualCvRequest
-    {
-        [Required]
-        public string FullName { get; init; }
-        
-        [Required]
-        public string Position { get; init; }
-    
-        [Required]
-        public string Skills { get; init; }
-    
-        [Required]
-        public string Experience { get; init; }
-        
-        [Required]
-        public string Education { get; init; }
-        
-        [Required]
-        public string AboutYourself { get; init; }
-    }
+    public record ManualCvRequest(
+        [property: Required] string FullName,
+        [property: Required] string Position,
+        [property: Required] string Skills,
+        [property: Required] string Experience,
+        [property: Required] string Education,
+        [property: Required] string AboutYourself);
 }

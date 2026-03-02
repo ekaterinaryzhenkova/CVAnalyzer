@@ -145,6 +145,31 @@ namespace CVAnalyzer.DbLayer.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbUserCredentials", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UsersCredentials");
+                });
+
             modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbAnalysis", b =>
                 {
                     b.HasOne("CVAnalyzer.DbLayer.Models.DbUser", "User")
@@ -178,6 +203,17 @@ namespace CVAnalyzer.DbLayer.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbUserCredentials", b =>
+                {
+                    b.HasOne("CVAnalyzer.DbLayer.Models.DbUser", "User")
+                        .WithOne("UsersCredentials")
+                        .HasForeignKey("CVAnalyzer.DbLayer.Models.DbUserCredentials", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbUser", b =>
                 {
                     b.Navigation("Analyses");
@@ -186,6 +222,9 @@ namespace CVAnalyzer.DbLayer.Migrations
                         .IsRequired();
 
                     b.Navigation("Letters");
+
+                    b.Navigation("UsersCredentials")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

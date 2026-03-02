@@ -1,0 +1,41 @@
+using CVAnalyzer.Business.Auth.Interfaces;
+using CVAnalyzer.DbLayer.Models;
+using CVAnalyzer.Models.Token;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+
+namespace CVAnalyzer.Business.Auth
+{
+    public class JwtService(
+        IOptions<JwtOptions> options)
+        : IJwtService
+    {
+        public string GenerateToken(DbUser user)
+        {
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.UniqueName, user.UsersCredentials.Login)
+            };
+
+            var keyy = options.Value.Key;
+            
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(options.Value.Key));
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: options.Value.Issuer,
+                audience: options.Value.Audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(options.Value.ExpireMinutes),
+                signingCredentials: creds);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+    }
+}
