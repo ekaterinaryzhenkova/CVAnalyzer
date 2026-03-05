@@ -2,7 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CVAnalyzer.Models.Requests
 {
-    public record LoginRequest(
-        [property: Required] string LoginData,
-        [property: Required] string Password);
+    public record LoginRequest
+    {
+        public string Login { get; init; }
+        
+        public string Password { get; init; }
+    };
 }

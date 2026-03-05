@@ -4,6 +4,7 @@ using CVAnalyzer.DbLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CVAnalyzer.DbLayer.Migrations
 {
     [DbContext(typeof(CVAnalyzerContext))]
-    partial class CVAnalyzerContextModelSnapshot : ModelSnapshot
+    [Migration("20260228144628_CreateCredentialsTable")]
+    partial class CreateCredentialsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.13")
+                .HasAnnotation("ProductVersion", "9.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -126,32 +129,6 @@ namespace CVAnalyzer.DbLayer.Migrations
                     b.ToTable("Prompts");
                 });
 
-            modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbRefreshToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ExpirationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsRevoked")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RefreshToken");
-                });
-
             modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbUser", b =>
                 {
                     b.Property<Guid>("Id")
@@ -229,17 +206,6 @@ namespace CVAnalyzer.DbLayer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbRefreshToken", b =>
-                {
-                    b.HasOne("CVAnalyzer.DbLayer.Models.DbUser", "User")
-                        .WithMany("RefreshToken")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbUserCredentials", b =>
                 {
                     b.HasOne("CVAnalyzer.DbLayer.Models.DbUser", "User")
@@ -259,8 +225,6 @@ namespace CVAnalyzer.DbLayer.Migrations
                         .IsRequired();
 
                     b.Navigation("Letters");
-
-                    b.Navigation("RefreshToken");
 
                     b.Navigation("UsersCredentials")
                         .IsRequired();

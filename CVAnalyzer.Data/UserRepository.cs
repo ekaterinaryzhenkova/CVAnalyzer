@@ -7,7 +7,7 @@ namespace CVAnalyzer.Repositories
 {
     public class UserRepository(CVAnalyzerContext dbContext) : IUserRepository
     {
-        public async Task<Guid> Create(DbUser user)
+        public async Task<Guid> CreateAsync(DbUser user)
         {
             dbContext.Users.Add(user);
             await dbContext.SaveChangesAsync();
@@ -15,7 +15,14 @@ namespace CVAnalyzer.Repositories
             return user.Id;
         }
         
-        public async Task<bool> GetByLoginAsync(string login)
+        public async Task<DbUser?> GetByLoginAsync(string login)
+        {
+            return await dbContext.Users
+                .Include(x => x.UsersCredentials)
+                .FirstOrDefaultAsync(x => x.UsersCredentials.Login == login);
+        }
+
+        public async Task<bool> IsLoginAlreadyExistsAsync(string login)
         {
             return await dbContext.Users
                 .Include(x => x.UsersCredentials)

@@ -4,8 +4,12 @@ namespace CVAnalyzer.Repositories.Interfaces
 {
     public interface IUserRepository
     {
-        Task<Guid> Create(DbUser user);
+        Task<Guid> CreateAsync(DbUser user);
 
-        Task<bool> GetByLoginAsync(string login);
+        Task<DbUser?> GetByLoginAsync(string login);
+        
+        
+        
+        Task<bool> IsLoginAlreadyExistsAsync(string login);
     }
 }

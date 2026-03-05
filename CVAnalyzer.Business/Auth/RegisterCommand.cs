@@ -12,16 +12,15 @@ using Microsoft.Extensions.Options;
 namespace CVAnalyzer.Business.Auth
 {
     public class RegisterCommand(
-        IUserRepository repository,
+        IUserRepository userRepository,
         IDbUserMapper mapper,
         IPasswordHasher<DbUser> hasher,
-        IOptions<JwtOptions> options,
         IJwtService jwtService)
         : IRegisterCommand
     {
         public async Task<OperationResultResponse<LoginResultResponse>> ExecuteAsync(RegisterRequest request)
         {
-            if (await repository.GetByLoginAsync(request.Login))
+            if (await userRepository.IsLoginAlreadyExistsAsync(request.Login))
             {
                 return new OperationResultResponse<LoginResultResponse>(
                     "Login already exists.",
@@ -31,16 +30,26 @@ namespace CVAnalyzer.Business.Auth
             DbUser user = mapper.Map(request);
             user.UsersCredentials.PasswordHash = hasher.HashPassword(user, request.Password);
 
-            LoginResultResponse response = new LoginResultResponse
+            LoginResultResponse result = new LoginResultResponse
             {
                 UserId = user.Id,
-                AccessToken = jwtService.GenerateToken(user),
-                AccessTokenExpiresIn = options.Value.ExpireMinutes
+                AccessToken = jwtService.GenerateToken(user, TokenType.Access, out double accessExpiresInMinutes),
+                AccessTokenExpiresIn = accessExpiresInMinutes,
+                RefreshToken = jwtService.GenerateToken(user, TokenType.Refresh, out double refreshExpiresInMinutes),
+                RefreshTokenExpiresIn = refreshExpiresInMinutes
             };
             
-            await repository.Create(user);
+            user.RefreshToken.Add(new DbRefreshToken
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                Value = result.RefreshToken,
+                ExpirationDate = DateTime.Now.AddMinutes(result.RefreshTokenExpiresIn)
+            });
+            
+            await userRepository.CreateAsync(user);
 
-            return new OperationResultResponse<LoginResultResponse>(response);
+            return new OperationResultResponse<LoginResultResponse>(result);
         }
     }
 }

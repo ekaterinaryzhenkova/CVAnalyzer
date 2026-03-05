@@ -19,6 +19,9 @@ namespace CVAnalyzer.DbLayer.Models
         
         [InverseProperty("User")]
         public DbUserCredentials UsersCredentials { get; set; }
+        
+        [InverseProperty("User")]
+        public List<DbRefreshToken> RefreshToken { get; set; } = [];
 
         [InverseProperty("User")]
         public List<DbLetter> Letters { get; set; } = [];

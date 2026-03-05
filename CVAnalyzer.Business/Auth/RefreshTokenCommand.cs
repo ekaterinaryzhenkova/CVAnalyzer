@@ -5,54 +5,52 @@ using CVAnalyzer.Models.Requests;
 using CVAnalyzer.Models.Responses;
 using CVAnalyzer.Models.Token;
 using CVAnalyzer.Repositories.Interfaces;
-using Microsoft.AspNetCore.Identity;
 
 namespace CVAnalyzer.Business.Auth
 {
-    public class LoginCommand(
+    public class RefreshTokenCommand(
         IRefreshTokenRepository refreshTokenRepository,
-        IUserRepository userRepository,
-        IJwtService jwtService,
-        IPasswordHasher<DbUser> passwordHasher)
-        : ILoginCommand
+        IJwtService jwtService)
+        : IRefreshTokenCommand
     {
-        public async Task<OperationResultResponse<LoginResultResponse>> ExecuteAsync(LoginRequest request)
+        public async Task<OperationResultResponse<LoginResultResponse>> ExecuteAsync(RefreshRequest request)
         {
-            var user = await userRepository.GetByLoginAsync(request.Login);
+            var token = await refreshTokenRepository.GetAsyns(request.RefreshToken);
 
-            if (user is null)
+            if (token is null)
             {
                 return new OperationResultResponse<LoginResultResponse>(
-                    "Invalid login or password",
-                    ResultStatus.BadRequest);
+                    "Invalid refresh token.",
+                    ResultStatus.NotFound);
             }
             
-            var verificationResult = passwordHasher.VerifyHashedPassword(
-                user,
-                user.UsersCredentials.PasswordHash,
-                request.Password);
-
-            if (verificationResult == PasswordVerificationResult.Failed)
+            if (token.IsRevoked)
             {
                 return new OperationResultResponse<LoginResultResponse>(
-                    "Invalid login or password",
+                    "Refresh token is revoked.",
                     ResultStatus.BadRequest);
+            }
+
+            if (token.ExpirationDate < DateTime.UtcNow)
+            {
+                return new OperationResultResponse<LoginResultResponse>(
+                    "Refresh token expired.",
+                    ResultStatus.Unauthorized);
             }
             
             LoginResultResponse result = new LoginResultResponse
             {
-                UserId = user.Id,
-                AccessToken = jwtService.GenerateToken(user, TokenType.Access, out double accessExpiresInMinutes),
+                UserId = token.UserId,
+                AccessToken = jwtService.GenerateToken(token.User, TokenType.Access, out double accessExpiresInMinutes),
                 AccessTokenExpiresIn = accessExpiresInMinutes,
-                RefreshToken = jwtService.GenerateToken(user, TokenType.Refresh, out double refreshExpiresInMinutes),
+                RefreshToken = jwtService.GenerateToken(token.User, TokenType.Refresh, out double refreshExpiresInMinutes),
                 RefreshTokenExpiresIn = refreshExpiresInMinutes
             };
             
-            //TODO: add cache later
             var refreshToken = new DbRefreshToken
             {
                 Id = Guid.NewGuid(),
-                UserId = user.Id,
+                UserId = token.UserId,
                 Value = result.RefreshToken,
                 ExpirationDate = DateTime.Now.AddMinutes(result.RefreshTokenExpiresIn)
             };

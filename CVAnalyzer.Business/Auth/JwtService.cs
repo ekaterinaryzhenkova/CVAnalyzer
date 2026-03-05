@@ -9,20 +9,21 @@ using System.Text;
 
 namespace CVAnalyzer.Business.Auth
 {
-    public class JwtService(
-        IOptions<JwtOptions> options)
-        : IJwtService
+    public class JwtService(IOptions<JwtOptions> options) : IJwtService
     {
-        public string GenerateToken(DbUser user)
+        public string GenerateToken(DbUser user, TokenType tokenType, out double tokenExpiresInMinutes)
         {
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.UniqueName, user.UsersCredentials.Login)
+                new Claim(JwtRegisteredClaimNames.UniqueName, user.UsersCredentials.Login),
+                new Claim("TokenType", tokenType.ToString())
             };
-
-            var keyy = options.Value.Key;
             
+            tokenExpiresInMinutes = tokenType == TokenType.Access
+                ? options.Value.AccessTokenLifetimeInMinutes
+                : options.Value.RefreshTokenLifetimeInMinutes;
+
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(options.Value.Key));
 
@@ -32,7 +33,7 @@ namespace CVAnalyzer.Business.Auth
                 issuer: options.Value.Issuer,
                 audience: options.Value.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(options.Value.ExpireMinutes),
+                expires: DateTime.UtcNow.AddMinutes(tokenExpiresInMinutes),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

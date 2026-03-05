@@ -12,13 +12,19 @@ namespace CVAnalyzer.Models.Responses
         /// </summary>
         public string AccessToken { get; init; }
         
-        //public string RefreshToken { get; init; }
+        /// <summary>
+        /// User refresh JWT.
+        /// </summary>
+        public string RefreshToken { get; init; }
 
         /// <summary>
         /// AccessToken life time in minutes.
         /// </summary>
         public double AccessTokenExpiresIn { get; init; }
         
-        //public double RefreshTokenExpiresIn { get; init; }
+        /// <summary>
+        /// RefreshToken life time in minutes.
+        /// </summary>
+        public double RefreshTokenExpiresIn { get; init; }
     }
 }

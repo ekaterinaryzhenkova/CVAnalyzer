@@ -4,8 +4,8 @@ using CVAnalyzer.Models.Responses;
 
 namespace CVAnalyzer.Business.Auth.Interfaces
 {
-    public interface ILoginCommand
+    public interface IRefreshTokenCommand
     {
-        Task<OperationResultResponse<LoginResultResponse>> ExecuteAsync(LoginRequest request);
+        Task<OperationResultResponse<LoginResultResponse>> ExecuteAsync(RefreshRequest request);
     }
 }

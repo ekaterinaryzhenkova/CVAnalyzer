@@ -27,17 +27,24 @@ namespace CVAnalyzer.Controllers
         {
             return await command.ExecuteAsync(request);
         }
+
+        [HttpPost("refresh")]
+        public async Task<OperationResultResponse<LoginResultResponse>> RefreshTokenAsync(
+            [FromServices] IRefreshTokenCommand command,
+            [FromBody] RefreshRequest refreshToken)
+        {
+            return await command.ExecuteAsync(refreshToken);
+        }
         
         /// <summary>
         /// User authentication.
         /// </summary>
         [HttpPost("login")]
-        public async Task<LoginResultResponse> LoginUserAsync(
+        public async Task<OperationResultResponse<LoginResultResponse>> LoginUserAsync(
             [FromServices] ILoginCommand command,
             [FromBody] LoginRequest request)
         {
-            //return await command.ExecuteAsync(userCredentials);
-            throw new NotImplementedException();
+            return await command.ExecuteAsync(request);
         }
     }
 }

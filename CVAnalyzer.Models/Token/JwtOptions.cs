@@ -8,6 +8,8 @@ namespace CVAnalyzer.Models.Token
 
         public string Audience { get; set; }
 
-        public int ExpireMinutes { get; set; }
+        public int AccessTokenLifetimeInMinutes { get; set; }
+        
+        public int RefreshTokenLifetimeInMinutes { get; set; }
     }
 }

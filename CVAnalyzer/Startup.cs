@@ -91,6 +91,8 @@ namespace CVAnalyzer
             services.AddScoped<ICreateCvByDocxCommand, CreateCvByDocxCommand>();
             services.AddScoped<IParseVacancyCommand, ParseVacancyCommand>();
             services.AddScoped<IRegisterCommand, RegisterCommand>();
+            services.AddScoped<IRefreshTokenCommand, RefreshTokenCommand>();
+            services.AddScoped<ILoginCommand, LoginCommand>();
 
             services.AddScoped<IAnalysisResponseMapper, AnalysisResponseMapper>();
             services.AddScoped<IDbAnalysisMapper, DbAnalysisMapper>();
@@ -100,6 +102,7 @@ namespace CVAnalyzer
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAnalysisRepository, AnalysisRepository>();
             services.AddScoped<IPromptRepository, PromptRepository>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             
             services.AddScoped<IPromptService, PromptService>();
             services.AddScoped<IJwtService, JwtService>();
@@ -124,6 +127,7 @@ namespace CVAnalyzer
             
             services.AddHostedService<AiTokenRefreshService>();
             services.AddHostedService<HhTokenRefreshService>();
+            services.AddHostedService<RefreshTokenRemovalService>();
             
             services.AddSingleton<IAiTokenSettings, AiTokenSettings>();
             services.AddSingleton<IHhTokenSettings, HhTokenSettings>();
