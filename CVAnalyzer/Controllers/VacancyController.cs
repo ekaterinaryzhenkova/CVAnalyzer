@@ -2,6 +2,7 @@ using CVAnalyzer.Business.Vacancy.Interfaces;
 using CVAnalyzer.Models;
 using CVAnalyzer.Models.OperationResultResponse;
 using CVAnalyzer.Models.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -20,11 +21,14 @@ namespace CVAnalyzer.Controllers
         /// Get vacancy by link.
         /// </summary>
         [HttpGet]
+        [Authorize]
         public async Task<OperationResultResponse<string>> GetAsync(
             [FromServices] IParseVacancyCommand command,
             [FromBody][Required] VacancyRequest vacancyRequest)
         {
             return await command.ExecuteAsync(vacancyRequest);
         }
+        
+        //TODO: http get но body!! плохо, исправить на query
     }
 }

@@ -163,8 +163,8 @@ namespace CVAnalyzer
             app.UseRouting();
             app.UseCors("AllowReactApp");
             
-            //app.UseAuthentication();
-            //app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
