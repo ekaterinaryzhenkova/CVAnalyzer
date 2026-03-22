@@ -1,4 +1,4 @@
-namespace CVAnalyzer.Repositories.Interfaces
+namespace CVAnalyzer.Repositories.Services
 {
     public interface IPromptService
     {

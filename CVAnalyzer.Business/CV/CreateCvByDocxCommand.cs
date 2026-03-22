@@ -5,6 +5,7 @@ using CVAnalyzer.Mappers.Interfaces;
 using CVAnalyzer.Models.OperationResultResponse;
 using CVAnalyzer.Models.Responses;
 using CVAnalyzer.Repositories.Interfaces;
+using CVAnalyzer.Repositories.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;

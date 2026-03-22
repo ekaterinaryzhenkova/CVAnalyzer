@@ -1,4 +1,5 @@
 using CVAnalyzer.Repositories.Interfaces;
+using CVAnalyzer.Repositories.Services;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace CVAnalyzer.Repositories

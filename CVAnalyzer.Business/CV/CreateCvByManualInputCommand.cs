@@ -6,13 +6,14 @@ using CVAnalyzer.Models.OperationResultResponse;
 using CVAnalyzer.Models.Requests;
 using CVAnalyzer.Models.Responses;
 using CVAnalyzer.Repositories.Interfaces;
+using CVAnalyzer.Repositories.Services;
 using Microsoft.Extensions.Logging;
 using System.Net;
 
 namespace CVAnalyzer.Business.CV
 {
     public class CreateCvByManualInputCommand(
-        ICVRepository repository,
+        ICvRepository repository,
         IAnalysisResponseMapper responseMapper,
         IDbAnalysisMapper dbAnalysisMapper,
         IAnalysisRepository analysisRepository,

@@ -18,6 +18,7 @@ using CVAnalyzer.Models.HhClient;
 using CVAnalyzer.Models.Token;
 using CVAnalyzer.Repositories;
 using CVAnalyzer.Repositories.Interfaces;
+using CVAnalyzer.Repositories.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -99,7 +100,7 @@ namespace CVAnalyzer
             services.AddScoped<IDbAnalysisMapper, DbAnalysisMapper>();
             services.AddScoped<IDbUserMapper, DbUserMapper>();
 
-            services.AddScoped<ICVRepository, CVRepository>();
+            services.AddScoped<ICvRepository, CvRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAnalysisRepository, AnalysisRepository>();
             services.AddScoped<IPromptRepository, PromptRepository>();

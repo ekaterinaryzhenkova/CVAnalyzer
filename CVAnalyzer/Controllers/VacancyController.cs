@@ -21,14 +21,12 @@ namespace CVAnalyzer.Controllers
         /// Get vacancy by link.
         /// </summary>
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         public async Task<OperationResultResponse<string>> GetAsync(
             [FromServices] IParseVacancyCommand command,
-            [FromBody][Required] VacancyRequest vacancyRequest)
+            [FromQuery][Required] VacancyRequest vacancyRequest)
         {
             return await command.ExecuteAsync(vacancyRequest);
         }
-        
-        //TODO: http get но body!! плохо, исправить на query
     }
 }
