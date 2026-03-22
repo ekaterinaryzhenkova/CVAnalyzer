@@ -106,7 +106,6 @@ namespace CVAnalyzer
             
             services.AddScoped<IPromptService, PromptService>();
             services.AddScoped<IJwtService, JwtService>();
-
                 
             services.AddHttpClient<IAiClient, AiClient>()
                 .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
@@ -139,7 +138,6 @@ namespace CVAnalyzer
                 options.UseSqlServer(dbConnStr);
             });
             
-            //HTTP КЛИЕНТ КОТОРЫЙ ИГНОРИРУЕТ СЕРТИФИКАТ ДЛЯ ПОДКЛЮЧЕНИЯ К ГИГАЧАТУ
             services.AddHttpClient("GigaChatJes")
                 .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
                 {

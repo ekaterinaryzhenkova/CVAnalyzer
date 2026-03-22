@@ -2,6 +2,7 @@ using CVAnalyzer.Business.Clients.Interfaces;
 using CVAnalyzer.Models.HhClient;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace CVAnalyzer.Business.Clients
 {
@@ -24,5 +25,21 @@ namespace CVAnalyzer.Business.Clients
 
             return (response.StatusCode, content);
         }
+        
+        public async Task<string?> GetTokenAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            var response = await httpClient.SendAsync(request, ct);
+            response.EnsureSuccessStatusCode();
+
+            var json = await response.Content.ReadAsStringAsync(ct);
+            using var doc = JsonDocument.Parse(json);
+
+            var token = doc.RootElement
+                .GetProperty("access_token")
+                .GetString();
+
+            return token;
+        }
+        
     }
 }
