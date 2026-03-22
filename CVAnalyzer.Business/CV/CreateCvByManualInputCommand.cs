@@ -36,7 +36,7 @@ namespace CVAnalyzer.Business.CV
             {
                 return new OperationResultResponse<AnalysisResponse>(
                     "Prompt is not found",
-                    ResultStatus.InternalServerError);
+                    ResultStatus.NotFound);
             }
             
             string prompt = string.Format(template, cv);

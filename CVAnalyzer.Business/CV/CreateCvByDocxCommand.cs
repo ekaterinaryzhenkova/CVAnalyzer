@@ -1,10 +1,10 @@
 using CVAnalyzer.Business.Clients.Interfaces;
 using CVAnalyzer.Business.CV.Interfaces;
+using CVAnalyzer.Business.helpers;
 using CVAnalyzer.Mappers.Interfaces;
 using CVAnalyzer.Models.OperationResultResponse;
 using CVAnalyzer.Models.Responses;
 using CVAnalyzer.Repositories.Interfaces;
-using DocumentFormat.OpenXml.Packaging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;
@@ -16,21 +16,14 @@ namespace CVAnalyzer.Business.CV
         IDbAnalysisMapper dbAnalysisMapper,
         IAnalysisRepository analysisRepository,
         IPromptService promptService,
+        IParseCvHelper parseHelper,
         IAiClient aiClient,
         ILogger<CreateCvByDocxCommand> logger) 
         : ICreateCvByDocxCommand
     {
         public async Task<OperationResultResponse<AnalysisResponse>> ExecuteAsync(IFormFile uploadedFile)
         {
-            using var memoryStream = new MemoryStream();
-            await uploadedFile.CopyToAsync(memoryStream);
-            
-            memoryStream.Position = 0;
-
-            using var wordDoc = WordprocessingDocument.Open(memoryStream, false);
-            var body = wordDoc.MainDocumentPart.Document.Body;
-
-            string cv =  body.InnerText;
+            string cv =  await parseHelper.ParseCvByDocx(uploadedFile);
             
             if (cv.Length == 0)
             {
@@ -45,7 +38,7 @@ namespace CVAnalyzer.Business.CV
             {
                 return new OperationResultResponse<AnalysisResponse>(
                     "Prompt is not found",
-                    ResultStatus.InternalServerError);
+                    ResultStatus.NotFound);
             }
             
             string prompt = string.Format(template, cv);

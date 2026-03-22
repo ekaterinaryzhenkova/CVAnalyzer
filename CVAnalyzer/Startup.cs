@@ -6,6 +6,7 @@ using CVAnalyzer.Business.Clients;
 using CVAnalyzer.Business.Clients.Interfaces;
 using CVAnalyzer.Business.CV;
 using CVAnalyzer.Business.CV.Interfaces;
+using CVAnalyzer.Business.helpers;
 using CVAnalyzer.Business.Vacancy;
 using CVAnalyzer.Business.Vacancy.Interfaces;
 using CVAnalyzer.DbLayer;
@@ -106,6 +107,8 @@ namespace CVAnalyzer
             
             services.AddScoped<IPromptService, PromptService>();
             services.AddScoped<IJwtService, JwtService>();
+
+            services.AddSingleton<IParseCvHelper, ParseCvHelper>();
                 
             services.AddHttpClient<IAiClient, AiClient>()
                 .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
