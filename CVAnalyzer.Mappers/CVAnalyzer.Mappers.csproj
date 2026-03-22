@@ -11,4 +11,9 @@
       <ProjectReference Include="..\CVAnalyzer.Models\CVAnalyzer.Models.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.13" />
+    </ItemGroup>
+
 </Project>

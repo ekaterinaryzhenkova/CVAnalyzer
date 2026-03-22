@@ -1,13 +1,10 @@
 namespace CVAnalyzer.Models.Responses
 {
-    public class AnalysisResponse
+    public record AnalysisResponse
     {
-        public string Structure { get; set; }
-        
-        public string Technologies { get; set; }
-        
-        public string Relevance { get; set; }
-        
-        public string Another { get; set; }
+        public string Structure { get; init; }
+        public string Technologies { get; init; }
+        public string Relevance { get; init; }
+        public string Another { get; init; }
     }
 }

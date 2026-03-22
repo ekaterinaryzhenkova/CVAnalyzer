@@ -4,6 +4,7 @@ using CVAnalyzer.DbLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CVAnalyzer.DbLayer.Migrations
 {
     [DbContext(typeof(CVAnalyzerContext))]
-    partial class CVAnalyzerContextModelSnapshot : ModelSnapshot
+    [Migration("20260304121345_CreateRefreshTokenTable")]
+    partial class CreateRefreshTokenTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

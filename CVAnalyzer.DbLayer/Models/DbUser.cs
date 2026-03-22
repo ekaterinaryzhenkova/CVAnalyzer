@@ -9,12 +9,19 @@ namespace CVAnalyzer.DbLayer.Models
         [Key]
         public Guid Id { get; set; }
         
+        [Required]
         public string FirstName { get; set; }
         
         public string LastName { get; set; }
 
         [InverseProperty("User")]
         public DbCV CV { get; set; }
+        
+        [InverseProperty("User")]
+        public DbUserCredentials UsersCredentials { get; set; }
+        
+        [InverseProperty("User")]
+        public List<DbRefreshToken> RefreshToken { get; set; } = [];
 
         [InverseProperty("User")]
         public List<DbLetter> Letters { get; set; } = [];

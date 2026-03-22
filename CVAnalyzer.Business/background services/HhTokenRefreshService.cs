@@ -1,16 +1,14 @@
-using CVAnalyzer.Models.AIClient;
+using CVAnalyzer.Business.Clients.Interfaces;
 using CVAnalyzer.Models.HhClient;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Net.Http.Headers;
-using System.Text.Json;
 
 namespace CVAnalyzer.Business.background_services
 {
     public class HhTokenRefreshService(
         IHhTokenSettings tokenSettings,
-        IHttpClientFactory httpClientFactory,
+        IHhClient client,
         IOptions<HhApiOptions> options,
         ILogger<HhTokenRefreshService> logger)
         : IHostedService
@@ -35,7 +33,6 @@ namespace CVAnalyzer.Business.background_services
         {
             try
             {
-                var client = httpClientFactory.CreateClient("HhApi");
                 var request = new HttpRequestMessage(HttpMethod.Post, _apiOptions.TokenUrl);
                 
                 var collection = new List<KeyValuePair<string, string>>();
@@ -47,16 +44,8 @@ namespace CVAnalyzer.Business.background_services
                 
                 request.Content = content;
                 
-                var response = await client.SendAsync(request, cancellationToken);
-                response.EnsureSuccessStatusCode();
+                var token = await client.GetTokenAsync(request, cancellationToken);
 
-                var json = await response.Content.ReadAsStringAsync(cancellationToken);
-                using var doc = JsonDocument.Parse(json);
-
-                var token = doc.RootElement
-                    .GetProperty("access_token")
-                    .GetString();
-                
                 if (!string.IsNullOrWhiteSpace(token))
                 {
                     tokenSettings.AccessToken = token;

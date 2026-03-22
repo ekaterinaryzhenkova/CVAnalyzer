@@ -9,12 +9,15 @@ namespace CVAnalyzer.DbLayer.Models
         [Key]
         public Guid Id { get; set; }
         
+        [Required]
         public string Name { get; set; }
         
+        [Required]
         public string Content { get; set; }
+
+        public bool IsActive { get; set; } = true;
         
-        public bool IsActive { get; set; }
-        
+        [Required]
         public DateOnly CreatedAt { get; set; }
         
         public DateOnly? UpdatedAt { get; set; }

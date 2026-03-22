@@ -16,4 +16,8 @@ public class CVAnalyzerContext(
     public DbSet<DbAnalysis> Analyses { get; init; }
     
     public DbSet<DbPrompt> Prompts { get; init; }
+    
+    public DbSet<DbUserCredentials> UsersCredentials { get; init; }
+
+    public DbSet<DbRefreshToken> RefreshTokens { get; init; }
 }

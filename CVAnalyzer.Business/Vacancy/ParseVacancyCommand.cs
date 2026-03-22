@@ -15,7 +15,7 @@ namespace CVAnalyzer.Business.Vacancy
         public async Task<OperationResultResponse<string>> ExecuteAsync(VacancyRequest vacancy)
         {
             //https://spb.hh.ru/vacancy/130452842?hhtmFromLabel=suitable_vacancies_sidebar&hhtmFrom=vacancy
-            string[] collection = vacancy.link.Split('/');
+            string[] collection = vacancy.Link.Split('/');
             string vacancyId = collection[^1];
             
             int length = vacancyId.IndexOf('?');

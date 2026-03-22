@@ -2,9 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CVAnalyzer.Models.Requests
 {
-    public record VacancyRequest
+    public record RefreshRequest
     {
-        [Required]
-        public string Link { get; set; }
+        public string RefreshToken { get; set; }
     };
 }
