@@ -28,6 +28,9 @@ namespace CVAnalyzer.Controllers
             return await command.ExecuteAsync(request);
         }
 
+        /// <summary>
+        /// Refresh user token.
+        /// </summary>
         [HttpPost("refresh")]
         public async Task<OperationResultResponse<LoginResultResponse>> RefreshTokenAsync(
             [FromServices] IRefreshTokenCommand command,

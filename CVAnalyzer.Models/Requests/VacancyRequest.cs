@@ -4,7 +4,9 @@ namespace CVAnalyzer.Models.Requests
 {
     public record VacancyRequest
     {
+        public string? Link { get; set; }
+        
         [Required]
-        public string Link { get; set; }
+        public Guid CvId { get; set; }
     };
 }

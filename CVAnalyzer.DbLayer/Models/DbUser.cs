@@ -13,20 +13,17 @@ namespace CVAnalyzer.DbLayer.Models
         public string FirstName { get; set; }
         
         public string LastName { get; set; }
-
-        [InverseProperty("User")]
-        public DbCV CV { get; set; }
         
         [InverseProperty("User")]
         public DbUserCredentials UsersCredentials { get; set; }
         
         [InverseProperty("User")]
-        public List<DbRefreshToken> RefreshToken { get; set; } = [];
+        public List<DbCV> CVs { get; set; } = [];
+        
+        [InverseProperty("User")]
+        public List<DbRefreshToken> RefreshTokens { get; set; } = [];
 
         [InverseProperty("User")]
         public List<DbLetter> Letters { get; set; } = [];
-        
-        [InverseProperty("User")]
-        public List<DbAnalysis> Analyses { get; set; } = [];
     }
 }

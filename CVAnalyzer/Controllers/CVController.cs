@@ -28,7 +28,7 @@ namespace CVAnalyzer.Controllers
         /// </summary>
         [HttpPost("pdf")]
         public async Task<OperationResultResponse<AnalysisResponse>> CreateByPdfAsync(
-            [FromServices] ICreateCbByPdfCommand command,
+            [FromServices] ICreateCvByPdfCommand command,
             [FromForm] IFormFile uploadedFile)
         {
             return await command.ExecuteAsync(uploadedFile);
@@ -54,6 +54,30 @@ namespace CVAnalyzer.Controllers
             [FromBody][Required] ManualCvRequest manualCvRequest)
         {
             return await command.ExecuteAsync(manualCvRequest);
+        }
+        
+        [HttpPost("ia/docx")]
+        public async Task<OperationResultResponse<Guid>> CreateByDocxIaAsync(
+            [FromServices] ICreateCvByDocxCommand command,
+            [FromForm] IFormFile uploadedFile)
+        { 
+            return await command.CreateCvAsync(uploadedFile);
+        }
+        
+        [HttpPost("ia/pdf")]
+        public async Task<OperationResultResponse<Guid>> CreateByPdfIaAsync(
+            [FromServices] ICreateCvByPdfCommand command,
+            [FromForm] IFormFile uploadedFile)
+        { 
+            return await command.CreateCvAsync(uploadedFile);
+        }
+        
+        [HttpPost("ia/manual")]
+        public async Task<OperationResultResponse<Guid>> CreateByManualIaAsync(
+            [FromServices] ICreateCvByManualInputCommand command,
+            [FromBody][Required] ManualCvRequest manualCvRequest)
+        {
+            return await command.CreateCvAsync(manualCvRequest);
         }
     }
 }

@@ -9,13 +9,15 @@ namespace CVAnalyzer.DbLayer.Models
         [Key]
         public Guid Id { get; set; }
         
-        [Required]
         [ForeignKey("User")]
-        public Guid UserId { get; set; }
+        public Guid? UserId { get; set; }
         
         public string ParsedText { get; set; }
         
-        [InverseProperty("CV")]
+        [InverseProperty("CVs")]
         public DbUser User { get; set; }
+        
+        [InverseProperty("CV")]
+        public DbAnalysis Analysis { get; set; }
     }
 }

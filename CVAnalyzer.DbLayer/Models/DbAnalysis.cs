@@ -10,8 +10,8 @@ namespace CVAnalyzer.DbLayer.Models
         public Guid Id { get; set; }
         
         [Required]
-        [ForeignKey("User")]
-        public Guid UserId { get; set; }
+        [ForeignKey("CV")]
+        public Guid CvId { get; set; }
         
         public string Structure { get; set; }
         
@@ -21,9 +21,9 @@ namespace CVAnalyzer.DbLayer.Models
         
         public string Another { get; set; }
         
-        public DateOnly Date { get; set; }
+        public DateTime CreatedAt { get; set; }
         
-        [InverseProperty("Analyses")]
-        public DbUser User { get; set; }
+        [InverseProperty("Analysis")]
+        public DbCV CV { get; set; }
     }
 }

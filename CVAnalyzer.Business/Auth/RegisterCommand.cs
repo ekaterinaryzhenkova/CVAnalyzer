@@ -39,7 +39,7 @@ namespace CVAnalyzer.Business.Auth
                 RefreshTokenExpiresIn = refreshExpiresInMinutes
             };
             
-            user.RefreshToken.Add(new DbRefreshToken
+            user.RefreshTokens.Add(new DbRefreshToken
             {
                 Id = Guid.NewGuid(),
                 UserId = user.Id,

@@ -7,6 +7,6 @@ namespace CVAnalyzer.Mappers.Interfaces
     {
         DbAnalysis Map(string analysis);
 
-        DbAnalysis Map(AnalysisResponse analysis);
+        DbAnalysis Map(AnalysisResponse analysis, Guid cvId);
     }
 }

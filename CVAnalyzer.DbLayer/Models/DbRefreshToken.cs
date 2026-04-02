@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CVAnalyzer.DbLayer.Models
 {
-    [Table("RefreshToken")]
+    [Table("RefreshTokens")]
     public class DbRefreshToken
     {
         [Key]
@@ -20,7 +20,7 @@ namespace CVAnalyzer.DbLayer.Models
         
         public bool IsRevoked { get; set; }
         
-        [InverseProperty("RefreshToken")]
+        [InverseProperty("RefreshTokens")]
         public DbUser User { get; set; }
     }
 }
