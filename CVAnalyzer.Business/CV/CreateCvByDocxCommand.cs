@@ -47,7 +47,7 @@ namespace CVAnalyzer.Business.CV
                 logger.LogError(ex.Message);
                 return new OperationResultResponse<Guid>(
                     "Error while saving cv to database",
-                    ResultStatus.ExternalServerError);
+                    ResultStatus.InternalServerError);
             }
 
             return new OperationResultResponse<Guid>(dbCv.Id);

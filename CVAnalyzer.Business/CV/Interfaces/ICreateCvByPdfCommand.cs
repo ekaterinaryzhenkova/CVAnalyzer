@@ -7,6 +7,6 @@ namespace CVAnalyzer.Business.CV.Interfaces
     
     public interface ICreateCvByPdfCommand
     {
-        Task<OperationResultResponse<Guid>> CreateCvAsync(IFormFile uploadedFile);
+        Task<OperationResultResponse<Guid>> ExecuteAsync(IFormFile uploadedFile);
     }
 }

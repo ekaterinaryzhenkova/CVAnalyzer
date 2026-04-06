@@ -7,12 +7,15 @@ using CVAnalyzer.Models.OperationResultResponse;
 using CVAnalyzer.Models.Requests;
 using CVAnalyzer.Repositories.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
 namespace CVAnalyzer.Business.Analysis
 {
     public class StartAnalysisCommand(
         IAnalysisRepository analysisRepository,
         IServiceScopeFactory scopeFactory,
-        IBackgroundTaskQueue taskQueue)
+        IBackgroundTaskQueue taskQueue,
+        ILogger<StartAnalysisCommand> logger)
         : IStartAnalysisCommand
     {
         public async Task<OperationResultResponse<Guid>> ExecuteAsync(VacancyRequest request)
@@ -25,8 +28,18 @@ namespace CVAnalyzer.Business.Analysis
                 Status = AnalysisStatus.Created,
                 CreatedAt = DateTime.UtcNow
             };
-            
-            await analysisRepository.CreateAsync(analysis);
+
+            try
+            {
+                await analysisRepository.CreateAsync(analysis);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error while saving analysis");
+                return new OperationResultResponse<Guid>(
+                    "Error while saving analysis",
+                    ResultStatus.InternalServerError);
+            }
             
             taskQueue.EnqueueTask(async () =>
             {

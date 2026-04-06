@@ -18,7 +18,7 @@ public class CreateCvByPdfCommand(
 {
     private static readonly TimeSpan CacheLifetime = TimeSpan.FromMinutes(25);
     
-    public async Task<OperationResultResponse<Guid>> CreateCvAsync(IFormFile uploadedFile)
+    public async Task<OperationResultResponse<Guid>> ExecuteAsync(IFormFile uploadedFile)
     {
         string parsedText =  await parseHelper.ParseCvByPdf(uploadedFile);
             
@@ -48,7 +48,7 @@ public class CreateCvByPdfCommand(
             logger.LogError(ex.Message);
             return new OperationResultResponse<Guid>(
                 "Error while saving cv to database",
-                ResultStatus.ExternalServerError);
+                ResultStatus.InternalServerError);
         }
 
         return new OperationResultResponse<Guid>(dbCv.Id);

@@ -1,4 +1,5 @@
 using CVAnalyzer.Business.Analysis.Interfaces;
+using CVAnalyzer.Helpers;
 using CVAnalyzer.Models.OperationResultResponse;
 using CVAnalyzer.Models.Requests;
 using CVAnalyzer.Models.Responses;
@@ -21,22 +22,30 @@ namespace CVAnalyzer.Controllers
         /// Post analysis.
         /// </summary>
         [HttpPost]
-        public async Task<OperationResultResponse<Guid>> CreateAsync(
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> CreateAsync(
             [FromServices] IStartAnalysisCommand createAnalysisCommand,
             [FromBody][Required] VacancyRequest vacancyRequest)
         {
-            return await createAnalysisCommand.ExecuteAsync(vacancyRequest);
+            var result = await createAnalysisCommand.ExecuteAsync(vacancyRequest);
+
+            return result.ToActionResult();
         }
         
         /// <summary>
         /// Get analysis.
         /// </summary>
         [HttpGet]
-        public async Task<OperationResultResponse<AnalysisResponse>> GetAsync(
+        [ProducesResponseType(typeof(AnalysisResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> GetAsync(
             [FromServices] IGetAnalysisCommand getAnalysisCommand,
             [FromQuery][Required] Guid analysisId)
         {
-            return await getAnalysisCommand.ExecuteAsync(analysisId);
+            var result = await getAnalysisCommand.ExecuteAsync(analysisId);
+            
+            return result.ToActionResult();
         }
     }
 }

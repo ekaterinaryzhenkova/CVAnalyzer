@@ -38,7 +38,7 @@ namespace CVAnalyzer.Business.Analysis
             {
                 return new OperationResultResponse<AnalysisResponse>(
                     "Analysis in processing",
-                    ResultStatus.Accepted);
+                    ResultStatus.InProgress);
             }
 
             if (dbAnalysis.Status == AnalysisStatus.Failed)

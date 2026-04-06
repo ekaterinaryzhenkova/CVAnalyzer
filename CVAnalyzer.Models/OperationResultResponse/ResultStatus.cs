@@ -7,12 +7,10 @@ namespace CVAnalyzer.Models.OperationResultResponse
     public enum ResultStatus
     {
         Ok,
-        Accepted,
+        InProgress,
         NotFound,
         BadRequest,
-        Forbidden,
         Unauthorized,
-        ExternalServerError,
         InternalServerError
     }
 }

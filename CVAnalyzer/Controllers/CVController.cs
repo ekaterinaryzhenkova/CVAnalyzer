@@ -1,4 +1,5 @@
 using CVAnalyzer.Business.CV.Interfaces;
+using CVAnalyzer.Helpers;
 using CVAnalyzer.Models.OperationResultResponse;
 using CVAnalyzer.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
@@ -19,33 +20,44 @@ namespace CVAnalyzer.Controllers
         /// Create CV by docx.
         /// </summary>
         [HttpPost("docx")]
-        public async Task<OperationResultResponse<Guid>> CreateByDocxAsync(
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> CreateByDocxAsync(
             [FromServices] ICreateCvByDocxCommand command,
             IFormFile uploadedFile)
         { 
-            return await command.ExecuteAsync(uploadedFile);
+            var result = await command.ExecuteAsync(uploadedFile);
+            return result.ToActionResult();
         }
         
         /// <summary>
         /// Create CV by pdf.
         /// </summary>
         [HttpPost("pdf")]
-        public async Task<OperationResultResponse<Guid>> CreateByPdfAsync(
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> CreateByPdfAsync(
             [FromServices] ICreateCvByPdfCommand command,
             IFormFile uploadedFile)
         { 
-            return await command.CreateCvAsync(uploadedFile);
+            var result = await command.ExecuteAsync(uploadedFile);
+            return result.ToActionResult();
         }
         
         /// <summary>
         /// Create CV by text.
         /// </summary>
         [HttpPost("manual")]
-        public async Task<OperationResultResponse<Guid>> CreateByManualAsync(
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> CreateByManualAsync(
             [FromServices] ICreateCvByManualInputCommand command,
             [FromBody][Required] ManualCvRequest manualCvRequest)
         {
-            return await command.ExecuteAsync(manualCvRequest);
+            var result = await command.ExecuteAsync(manualCvRequest);
+            return result.ToActionResult();
         }
     }
 }
