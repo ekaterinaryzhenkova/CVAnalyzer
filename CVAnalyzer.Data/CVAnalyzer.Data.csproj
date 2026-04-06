@@ -14,6 +14,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CVAnalyzer.DbLayer\CVAnalyzer.DbLayer.csproj" />
+      <ProjectReference Include="..\CVAnalyzer.Mappers\CVAnalyzer.Mappers.csproj" />
       <ProjectReference Include="..\CVAnalyzer.Models\CVAnalyzer.Models.csproj" />
     </ItemGroup>
 

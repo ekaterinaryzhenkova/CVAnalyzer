@@ -4,7 +4,7 @@ namespace CVAnalyzer.Models.OperationResultResponse
     {
         public bool IsSuccess { get; }
         public T? Result { get; }
-        public string? Error { get; }
+        public string? Message { get; }
         public ResultStatus Status { get; }
         
         public OperationResultResponse(T value)
@@ -14,10 +14,10 @@ namespace CVAnalyzer.Models.OperationResultResponse
             Status = ResultStatus.Ok;
         }
 
-        public OperationResultResponse(string error, ResultStatus status)
+        public OperationResultResponse(string message, ResultStatus status)
         {
             IsSuccess = false;
-            Error = error;
+            Message = message;
             Status = status;
         }
     }

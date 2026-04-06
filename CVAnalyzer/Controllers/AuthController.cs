@@ -1,5 +1,4 @@
 using CVAnalyzer.Business.Auth.Interfaces;
-using CVAnalyzer.Business.Vacancy.Interfaces;
 using CVAnalyzer.Models.OperationResultResponse;
 using CVAnalyzer.Models.Requests;
 using CVAnalyzer.Models.Responses;

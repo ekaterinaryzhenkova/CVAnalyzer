@@ -1,3 +1,4 @@
+using CVAnalyzer.Business.helpers.Interfaces;
 using DocumentFormat.OpenXml.Packaging;
 using Microsoft.AspNetCore.Http;
 using System.Text;

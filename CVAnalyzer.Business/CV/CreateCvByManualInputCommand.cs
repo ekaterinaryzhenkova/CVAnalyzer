@@ -1,28 +1,21 @@
-using CVAnalyzer.Business.Clients.Interfaces;
 using CVAnalyzer.Business.CV.Interfaces;
-using CVAnalyzer.Mappers.Interfaces;
-using CVAnalyzer.Models;
+using CVAnalyzer.DbLayer.Models;
 using CVAnalyzer.Models.OperationResultResponse;
 using CVAnalyzer.Models.Requests;
-using CVAnalyzer.Models.Responses;
 using CVAnalyzer.Repositories.Interfaces;
-using CVAnalyzer.Repositories.Services;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using System.Net;
 
 namespace CVAnalyzer.Business.CV
 {
     public class CreateCvByManualInputCommand(
-        ICvRepository repository,
-        IAnalysisResponseMapper responseMapper,
-        IDbAnalysisMapper dbAnalysisMapper,
-        IAnalysisRepository analysisRepository,
-        IPromptService promptService,
-        IAiClient aiClient,
+        ICvRepository cvRepository,
+        IMemoryCache cache,
         ILogger<CreateCvByManualInputCommand> logger) 
         : ICreateCvByManualInputCommand
     {
-        public async Task<OperationResultResponse<AnalysisResponse>> ExecuteAsync(ManualCvRequest manualCvRequest)
+        private static readonly TimeSpan CacheLifetime = TimeSpan.FromMinutes(25);
+        public async Task<OperationResultResponse<Guid>> ExecuteAsync(ManualCvRequest manualCvRequest)
         {
             string cv = "ФИО: " + manualCvRequest.FullName + "\n" +
                         "Позиция: " + manualCvRequest.Position + "\n" +
@@ -30,46 +23,30 @@ namespace CVAnalyzer.Business.CV
                         "Опыт: " + manualCvRequest.Experience + "\n" +
                         "Образование: " + manualCvRequest.Education + "\n" +
                         "О себе: " + manualCvRequest.AboutYourself;
-                        
-            string? template = await promptService.GetAsync("CvAnalysis");
-
-            if (template is null)
+            
+            //TODO: пока без юзер айди, но взять из контекста, если подключить авторизацию
+            DbCV dbCv = new DbCV
             {
-                return new OperationResultResponse<AnalysisResponse>(
-                    "Prompt is not found",
-                    ResultStatus.NotFound);
-            }
-            
-            string prompt = string.Format(template, cv);
-            
+                Id = Guid.NewGuid(),
+                ParsedText = cv
+            };
+
             try
             {
-                var response = await aiClient.SendMessageAsync(prompt);
-
-                if (response.StatusCode is not HttpStatusCode.OK)
-                {
-                    return await OperationResultResponseHelper.HttpToOperationResultAsync<AnalysisResponse>(response.StatusCode);
-                }
-
-                AnalysisResponse result = responseMapper.Map(response.Content);
-                await analysisRepository.CreateAsync(dbAnalysisMapper.Map(result));
-            
-                return new OperationResultResponse<AnalysisResponse>(result);
-            }
-            catch (HttpRequestException ex)
-            {
-                logger.LogError(ex.Message);
-                return new OperationResultResponse<AnalysisResponse>(
-                    ex.Message,
-                    ResultStatus.ExternalServerError);
+                await cvRepository.CreateAsync(dbCv);
+                
+                logger.LogInformation("Cv added to cache");
+                cache.Set(dbCv.Id, dbCv, CacheLifetime);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex.Message);
-                return new OperationResultResponse<AnalysisResponse>(
-                    "Unexpected error.",
-                    ResultStatus.InternalServerError);
+                return new OperationResultResponse<Guid>(
+                    "Error while saving cv to database",
+                    ResultStatus.ExternalServerError);
             }
+
+            return new OperationResultResponse<Guid>(dbCv.Id);
         }
     }
 }

@@ -12,8 +12,7 @@ namespace CVAnalyzer.Repositories
         public async Task<string> GetAsync(string name)
         {
             return await dbContext.Prompts
-                .AsNoTracking()
-                .Where(p => p.Name == name & p.IsActive)
+                .Where(p => p.Name == name && p.IsActive)
                 .Select(p => p.Content)
                 .FirstAsync();
         }

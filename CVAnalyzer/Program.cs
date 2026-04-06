@@ -1,14 +1,16 @@
 using CVAnalyzer.Business;
+using CVAnalyzer.Business.Analysis;
+using CVAnalyzer.Business.Analysis.Interfaces;
 using CVAnalyzer.Business.Auth;
 using CVAnalyzer.Business.Auth.Interfaces;
 using CVAnalyzer.Business.background_services;
+using CVAnalyzer.Business.background_services.Interfaces;
 using CVAnalyzer.Business.Clients;
 using CVAnalyzer.Business.Clients.Interfaces;
 using CVAnalyzer.Business.CV;
 using CVAnalyzer.Business.CV.Interfaces;
 using CVAnalyzer.Business.helpers;
-using CVAnalyzer.Business.Vacancy;
-using CVAnalyzer.Business.Vacancy.Interfaces;
+using CVAnalyzer.Business.helpers.Interfaces;
 using CVAnalyzer.DbLayer;
 using CVAnalyzer.DbLayer.Models;
 using CVAnalyzer.Mappers;
@@ -23,6 +25,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using System.Text;
 
@@ -52,10 +55,11 @@ builder.Services.AddScoped<IPasswordHasher<DbUser>, PasswordHasher<DbUser>>();
 builder.Services.AddScoped<ICreateCvByPdfCommand, CreateCvByPdfCommand>();
 builder.Services.AddScoped<ICreateCvByManualInputCommand, CreateCvByManualInputCommand>();
 builder.Services.AddScoped<ICreateCvByDocxCommand, CreateCvByDocxCommand>();
-builder.Services.AddScoped<IParseVacancyAndCreateAnalysisCommand, ParseVacancyAndCreateAnalysisCommand>();
+builder.Services.AddScoped<IStartAnalysisCommand, StartAnalysisCommand>();
 builder.Services.AddScoped<IRegisterCommand, RegisterCommand>();
 builder.Services.AddScoped<IRefreshTokenCommand, RefreshTokenCommand>();
 builder.Services.AddScoped<ILoginCommand, LoginCommand>();
+builder.Services.AddScoped<IGetAnalysisCommand, GetAnalysisCommand>();
 
 builder.Services.AddScoped<IAnalysisResponseMapper, AnalysisResponseMapper>();
 builder.Services.AddScoped<IDbAnalysisMapper, DbAnalysisMapper>();
@@ -71,6 +75,7 @@ builder.Services.AddScoped<IPromptService, PromptService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
 builder.Services.AddSingleton<IParseCvHelper, ParseCvHelper>();
+builder.Services.AddScoped<ICreateAnalysisHelper, CreateAnalysisHelper>();
 
 builder.Services.AddHttpClient<IAiClient, AiClient>()
     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
@@ -117,6 +122,16 @@ builder.Services
         };
     });
 
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Cv analyzer API",
+        Version = "v1",
+        Description = "Analyzing user's cvs"
+    });
+});
+
 var dbConnStr = configuration.GetConnectionString("SqlConnectionString");
 
 builder.Services.AddDbContext<CVAnalyzerContext>(options =>
@@ -124,9 +139,12 @@ builder.Services.AddDbContext<CVAnalyzerContext>(options =>
     options.UseSqlServer(dbConnStr);
 });
 
+builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+
 builder.Services.AddHostedService<AiTokenRefreshService>();
 builder.Services.AddHostedService<HhTokenRefreshService>();
 builder.Services.AddHostedService<RefreshTokenRemovalService>();
+builder.Services.AddHostedService<CreateAnalysisService>();
 
 builder.Services.AddSingleton<IAiTokenSettings, AiTokenSettings>();
 builder.Services.AddSingleton<IHhTokenSettings, HhTokenSettings>();
@@ -156,6 +174,9 @@ for (int i = 0; i < 5; i++)
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors("AllowReactApp");
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseAuthentication();
 app.UseAuthorization();

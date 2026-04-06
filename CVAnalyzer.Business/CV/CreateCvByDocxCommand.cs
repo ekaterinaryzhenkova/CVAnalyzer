@@ -1,78 +1,56 @@
-using CVAnalyzer.Business.Clients.Interfaces;
 using CVAnalyzer.Business.CV.Interfaces;
-using CVAnalyzer.Business.helpers;
-using CVAnalyzer.Mappers.Interfaces;
+using CVAnalyzer.Business.helpers.Interfaces;
+using CVAnalyzer.DbLayer.Models;
 using CVAnalyzer.Models.OperationResultResponse;
-using CVAnalyzer.Models.Responses;
 using CVAnalyzer.Repositories.Interfaces;
-using CVAnalyzer.Repositories.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using System.Net;
 
 namespace CVAnalyzer.Business.CV
 {
     public class CreateCvByDocxCommand(
-        IAnalysisResponseMapper responseMapper,
-        IDbAnalysisMapper dbAnalysisMapper,
-        IAnalysisRepository analysisRepository,
-        IPromptService promptService,
+        ICvRepository cvRepository,
         IParseCvHelper parseHelper,
-        IAiClient aiClient,
+        IMemoryCache cache,
         ILogger<CreateCvByDocxCommand> logger) 
         : ICreateCvByDocxCommand
     {
-        public async Task<OperationResultResponse<AnalysisResponse>> ExecuteAsync(IFormFile uploadedFile)
+        private static readonly TimeSpan CacheLifetime = TimeSpan.FromMinutes(25); 
+        public async Task<OperationResultResponse<Guid>> ExecuteAsync(IFormFile uploadedFile)
         {
-            string cv =  await parseHelper.ParseCvByDocx(uploadedFile);
+            string parsedText =  await parseHelper.ParseCvByDocx(uploadedFile);
             
-            if (cv.Length == 0)
+            if (parsedText.Length == 0)
             {
-                return new OperationResultResponse<AnalysisResponse>(
+                return new OperationResultResponse<Guid>(
                     "The uploaded file is empty.",
                     ResultStatus.BadRequest);
             }
             
-            string? template = await promptService.GetAsync("CvAnalysis");
-
-            if (template is null)
+            //TODO: пока без юзер айди, но взять из контекста, если подключить авторизацию
+            DbCV dbCv = new DbCV
             {
-                return new OperationResultResponse<AnalysisResponse>(
-                    "Prompt is not found",
-                    ResultStatus.NotFound);
-            }
-            
-            string prompt = string.Format(template, cv);
-            
+                Id = Guid.NewGuid(),
+                ParsedText = parsedText
+            };
+
             try
             {
-                var response = await aiClient.SendMessageAsync(prompt);
-
-                if (response.StatusCode is not HttpStatusCode.OK)
-                {
-                    return await OperationResultResponseHelper.HttpToOperationResultAsync<AnalysisResponse>(response.StatusCode);
-                }
-
+                await cvRepository.CreateAsync(dbCv);
                 
-                AnalysisResponse result = responseMapper.Map(response.Content);
-                await analysisRepository.CreateAsync(dbAnalysisMapper.Map(result));
-            
-                return new OperationResultResponse<AnalysisResponse>(result);
-            }
-            catch (HttpRequestException ex)
-            {
-                logger.LogError(ex.Message);
-                return new OperationResultResponse<AnalysisResponse>(
-                    ex.Message,
-                    ResultStatus.ExternalServerError);
+                logger.LogInformation("Cv added to cache");
+                cache.Set(dbCv.Id, dbCv, CacheLifetime);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex.Message);
-                return new OperationResultResponse<AnalysisResponse>(
-                    "Unexpected error.",
-                    ResultStatus.InternalServerError);
+                return new OperationResultResponse<Guid>(
+                    "Error while saving cv to database",
+                    ResultStatus.ExternalServerError);
             }
+
+            return new OperationResultResponse<Guid>(dbCv.Id);
         }
     }
 }

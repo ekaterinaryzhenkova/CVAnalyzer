@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace CVAnalyzer.Business.helpers
+namespace CVAnalyzer.Business.helpers.Interfaces
 {
     public interface IParseCvHelper
     {

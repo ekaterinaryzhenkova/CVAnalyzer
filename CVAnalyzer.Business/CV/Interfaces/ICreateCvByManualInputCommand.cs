@@ -7,6 +7,6 @@ namespace CVAnalyzer.Business.CV.Interfaces
 {
     public interface ICreateCvByManualInputCommand
     {
-        Task<OperationResultResponse<AnalysisResponse>> ExecuteAsync(ManualCvRequest manualCvRequest);
+        Task<OperationResultResponse<Guid>> ExecuteAsync(ManualCvRequest manualCvRequest);
     }
 }

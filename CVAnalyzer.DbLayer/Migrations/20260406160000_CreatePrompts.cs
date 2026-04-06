@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CVAnalyzer.DbLayer.Migrations
 {
     [DbContext(typeof(CVAnalyzerContext))]
-    [Migration("20260404160000_CreatePrompts")]
+    [Migration("20260406160000_CreatePrompts")]
     public class CreatePrompts: Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

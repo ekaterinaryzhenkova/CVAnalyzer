@@ -1,12 +1,13 @@
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace CVAnalyzer.Models.OperationResultResponse
 {
-    [JsonConverter(typeof(StringEnumConverter<,,>))]
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum ResultStatus
     {
         Ok,
+        Accepted,
         NotFound,
         BadRequest,
         Forbidden,

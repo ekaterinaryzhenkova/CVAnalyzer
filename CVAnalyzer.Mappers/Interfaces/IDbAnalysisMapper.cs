@@ -5,7 +5,7 @@ namespace CVAnalyzer.Mappers.Interfaces
 {
     public interface IDbAnalysisMapper
     {
-        DbAnalysis Map(string analysis);
+        DbAnalysis Map(string analysis, Guid cvId);
 
         DbAnalysis Map(AnalysisResponse analysis, Guid cvId);
     }
