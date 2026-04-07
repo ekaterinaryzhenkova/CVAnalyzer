@@ -1,7 +1,7 @@
 using CVAnalyzer.Repositories.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace CVAnalyzer.Repositories
+namespace CVAnalyzer.Repositories.Services
 {
     public class PromptService(
         IPromptRepository repository,
@@ -10,19 +10,16 @@ namespace CVAnalyzer.Repositories
     {
         private static readonly TimeSpan CacheLifetime = TimeSpan.FromMinutes(25);
         
-        public async Task<string?> GetAsync(string name)
+        public async Task<string> GetAsync(string name)
         {
-            if (cache.TryGetValue(name, out string? cachedPrompt))
+            if (cache.TryGetValue(name, out string? cachedPrompt) && cachedPrompt != null)
             {
                 return cachedPrompt;
             }
             
             var prompt = await repository.GetAsync(name);
 
-            if (prompt is not null)
-            {
-                cache.Set(name, prompt, CacheLifetime);
-            }
+            cache.Set(name, prompt, CacheLifetime);
 
             return prompt;
         }

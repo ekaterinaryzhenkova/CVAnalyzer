@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CVAnalyzer.DbLayer.Migrations
 {
     [DbContext(typeof(CVAnalyzerContext))]
-    [Migration("20260218154407_CreatePromptsTable")]
-    partial class CreatePromptsTable
+    [Migration("20260406123301_AddInitialMigration")]
+    partial class AddInitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.11")
+                .HasAnnotation("ProductVersion", "9.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -32,30 +32,36 @@ namespace CVAnalyzer.DbLayer.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Another")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CvId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Relevance")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<string>("Structure")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Technologies")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("VacancyComparison")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VacancyLink")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("CvId")
+                        .IsUnique();
 
                     b.ToTable("Analyses");
                 });
@@ -70,13 +76,12 @@ namespace CVAnalyzer.DbLayer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("CVs");
                 });
@@ -111,8 +116,8 @@ namespace CVAnalyzer.DbLayer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly>("CreatedAt")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -121,12 +126,38 @@ namespace CVAnalyzer.DbLayer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly?>("UpdatedAt")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.ToTable("Prompts");
+                });
+
+            modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbRefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbUser", b =>
@@ -148,24 +179,47 @@ namespace CVAnalyzer.DbLayer.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbUserCredentials", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UsersCredentials");
+                });
+
             modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbAnalysis", b =>
                 {
-                    b.HasOne("CVAnalyzer.DbLayer.Models.DbUser", "User")
-                        .WithMany("Analyses")
-                        .HasForeignKey("UserId")
+                    b.HasOne("CVAnalyzer.DbLayer.Models.DbCV", "CV")
+                        .WithOne("Analysis")
+                        .HasForeignKey("CVAnalyzer.DbLayer.Models.DbAnalysis", "CvId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("CV");
                 });
 
             modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbCV", b =>
                 {
                     b.HasOne("CVAnalyzer.DbLayer.Models.DbUser", "User")
-                        .WithOne("CV")
-                        .HasForeignKey("CVAnalyzer.DbLayer.Models.DbCV", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("CVs")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -181,14 +235,44 @@ namespace CVAnalyzer.DbLayer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbUser", b =>
+            modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbRefreshToken", b =>
                 {
-                    b.Navigation("Analyses");
-
-                    b.Navigation("CV")
+                    b.HasOne("CVAnalyzer.DbLayer.Models.DbUser", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbUserCredentials", b =>
+                {
+                    b.HasOne("CVAnalyzer.DbLayer.Models.DbUser", "User")
+                        .WithOne("UsersCredentials")
+                        .HasForeignKey("CVAnalyzer.DbLayer.Models.DbUserCredentials", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbCV", b =>
+                {
+                    b.Navigation("Analysis")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbUser", b =>
+                {
+                    b.Navigation("CVs");
+
                     b.Navigation("Letters");
+
+                    b.Navigation("RefreshTokens");
+
+                    b.Navigation("UsersCredentials")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

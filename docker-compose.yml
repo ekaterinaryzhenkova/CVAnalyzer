@@ -1,6 +1,4 @@
-﻿version: "3.9"
-
-services:
+﻿services:
   api:
     build:
       context: .
@@ -22,7 +20,7 @@ services:
       SA_PASSWORD: "Strong!Passw0rd"
       MSSQL_PID: Express
     ports:
-      - "1433:1433"
+      - "14333:1433"
     volumes:
       - mssql_data:/var/opt/mssql
 

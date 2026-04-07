@@ -4,6 +4,6 @@ namespace CVAnalyzer.Repositories.Interfaces
 {
     public interface IPromptRepository
     {
-        Task<string?> GetAsync(string name);
+        Task<string> GetAsync(string name);
     }
 }

@@ -1,5 +1,4 @@
 using CVAnalyzer.Business.Auth.Interfaces;
-using CVAnalyzer.Business.Vacancy.Interfaces;
 using CVAnalyzer.Models.OperationResultResponse;
 using CVAnalyzer.Models.Requests;
 using CVAnalyzer.Models.Responses;
@@ -28,6 +27,9 @@ namespace CVAnalyzer.Controllers
             return await command.ExecuteAsync(request);
         }
 
+        /// <summary>
+        /// Refresh user token.
+        /// </summary>
         [HttpPost("refresh")]
         public async Task<OperationResultResponse<LoginResultResponse>> RefreshTokenAsync(
             [FromServices] IRefreshTokenCommand command,

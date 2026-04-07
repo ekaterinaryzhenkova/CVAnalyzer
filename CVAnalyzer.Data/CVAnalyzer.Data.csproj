@@ -8,12 +8,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.11" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.11" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.13" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.13" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\CVAnalyzer.DbLayer\CVAnalyzer.DbLayer.csproj" />
+      <ProjectReference Include="..\CVAnalyzer.Mappers\CVAnalyzer.Mappers.csproj" />
       <ProjectReference Include="..\CVAnalyzer.Models\CVAnalyzer.Models.csproj" />
     </ItemGroup>
 

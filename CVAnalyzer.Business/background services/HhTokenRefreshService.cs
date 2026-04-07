@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace CVAnalyzer.Business.background_services
 {
+    //TODO: добавить таймер и ретрай
     public class HhTokenRefreshService(
         IHhTokenSettings tokenSettings,
         IHhClient client,

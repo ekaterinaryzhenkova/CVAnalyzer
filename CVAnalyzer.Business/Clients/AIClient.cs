@@ -2,6 +2,7 @@ using CVAnalyzer.Business.Clients.Interfaces;
 using CVAnalyzer.Models.AIClient;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace CVAnalyzer.Business.Clients
@@ -51,6 +52,53 @@ namespace CVAnalyzer.Business.Clients
             }
 
             return (response.StatusCode, content);
+        }
+        
+        public async Task<string> CreateAnalysisAsync(string prompt)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, "https://gigachat.devices.sberbank.ru/api/v1/chat/completions");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", aiTokenSettings.AccessToken);
+            
+            var payload = new
+            {
+                model = "GigaChat-2",
+                stream = false,
+                update_interval = 0,
+                messages = new[]
+                {
+                    new
+                    {
+                        role = "user",
+                        content = prompt
+                    }
+                }
+            };
+
+            request.Content = new StringContent(
+                System.Text.Json.JsonSerializer.Serialize(payload),
+                Encoding.UTF8,
+                "application/json"
+            );
+            
+            using var response = await httpClient.SendAsync(request);
+            
+            if (!(response.StatusCode is HttpStatusCode.OK))
+            {
+                throw new ExternalException(response.StatusCode.ToString());
+            }
+            
+            var content = await response.Content.ReadAsStringAsync();
+            var doc = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(content);
+            
+            //TODO: спорный моментик
+            if (doc.TryGetProperty("choices", out var choices) &&
+                choices.GetArrayLength() > 0)
+            {
+                var msg = choices[0].GetProperty("message").GetProperty("content");
+                return msg.GetString();
+            }
+
+            return content;
         }
     }
 }

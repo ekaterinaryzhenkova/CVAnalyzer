@@ -6,6 +6,8 @@ namespace CVAnalyzer.Business.Clients.Interfaces
     {
         Task<(HttpStatusCode StatusCode, string Content)> ParseVacancyAsync(string vacancyId);
 
+        Task<string> ParseVacancyTextAsync(string vacancyId);
+
         Task<string?> GetTokenAsync(HttpRequestMessage request, CancellationToken ct);
     }
 }

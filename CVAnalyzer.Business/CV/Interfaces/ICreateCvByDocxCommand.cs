@@ -6,6 +6,6 @@ namespace CVAnalyzer.Business.CV.Interfaces
 {
     public interface ICreateCvByDocxCommand
     {
-        Task<OperationResultResponse<AnalysisResponse>> ExecuteAsync(IFormFile uploadedFile);
+        Task<OperationResultResponse<Guid>> ExecuteAsync(IFormFile uploadedFile);
     }
 }

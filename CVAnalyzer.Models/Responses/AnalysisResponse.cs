@@ -6,5 +6,6 @@ namespace CVAnalyzer.Models.Responses
         public string Technologies { get; init; }
         public string Relevance { get; init; }
         public string Another { get; init; }
+        public string? VacancyComparison { get; init; }
     }
 }

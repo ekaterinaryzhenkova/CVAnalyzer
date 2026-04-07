@@ -7,9 +7,9 @@ namespace CVAnalyzer.Mappers
         public static Dictionary<string, string> ParseSections(string text)
         {
             var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
+            
             var regex = new Regex(
-                @"(?m)^\s*.*?[1-4]\s*\.?\s*(Структура|Техническая\s+составляющая|Релевантность|Прочие\s+рекомендации)",
+                @"(?m)^\s*.*?[1-5]\s*\.?\s*(Структура|Техническая\s+составляющая|Релевантность|Прочие\s+рекомендации|Совпадение\s+с\s+вакансией)",
                 RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
             var matches = regex.Matches(text);
