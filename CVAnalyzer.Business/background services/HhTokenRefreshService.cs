@@ -34,7 +34,7 @@ namespace CVAnalyzer.Business.background_services
         {
             try
             {
-                var request = new HttpRequestMessage(HttpMethod.Post, _apiOptions.TokenUrl);
+                var request = new HttpRequestMessage(HttpMethod.Post, "token");
                 
                 var collection = new List<KeyValuePair<string, string>>();
                 collection.Add(new("client_id", _apiOptions.ClientId));
