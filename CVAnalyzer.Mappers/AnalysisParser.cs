@@ -9,8 +9,8 @@ namespace CVAnalyzer.Mappers
             var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             
             var regex = new Regex(
-                @"(?m)^\s*.*?[1-5]\s*\.?\s*(Структура|Техническая\s+составляющая|Релевантность|Прочие\s+рекомендации|Совпадение\s+с\s+вакансией)",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled);
+                @"(?mi)^\s*.*?(Структура|Техническая\s+составляющая|Релевантность|Прочие\s+рекомендации|Совпадение\s+с\s+вакансией)",
+                RegexOptions.Compiled);
 
             var matches = regex.Matches(text);
 

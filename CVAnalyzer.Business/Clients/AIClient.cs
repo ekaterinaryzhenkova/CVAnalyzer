@@ -19,7 +19,7 @@ namespace CVAnalyzer.Business.Clients
             
             var payload = new
             {
-                model = "GigaChat-2",
+                model = "GigaChat-2 Pro",
                 stream = false,
                 update_interval = 0,
                 messages = new[]
@@ -61,7 +61,7 @@ namespace CVAnalyzer.Business.Clients
             
             var payload = new
             {
-                model = "GigaChat-2",
+                model = "GigaChat-2-Pro:2.0.28.2",
                 stream = false,
                 update_interval = 0,
                 messages = new[]

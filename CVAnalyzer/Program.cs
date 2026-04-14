@@ -1,4 +1,3 @@
-using CVAnalyzer.Business;
 using CVAnalyzer.Business.Analysis;
 using CVAnalyzer.Business.Analysis.Interfaces;
 using CVAnalyzer.Business.Auth;
@@ -77,26 +76,13 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddSingleton<IParseCvHelper, ParseCvHelper>();
 builder.Services.AddScoped<ICreateAnalysisHelper, CreateAnalysisHelper>();
 
-builder.Services.AddHttpClient<IAiClient, AiClient>()
-    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-    {
-        //TODO: remove this and add certificate to store
-        ServerCertificateCustomValidationCallback = (_, _, _, _) => true
-    });
+builder.Services.AddHttpClient<IAiClient, AiClient>();
 
 builder.Services.AddHttpClient<IHhClient, HhClient>(client =>
 {
     client.BaseAddress = new Uri("https://api.hh.ru/");
-    client.DefaultRequestHeaders.UserAgent.ParseAdd("CVAnalyzer/1.0 (vadivazikryzh@gmail.com)");
+    client.DefaultRequestHeaders.UserAgent.ParseAdd(builder.Configuration["HhApi:Headers"]);
 });
-
-builder.Services.AddHttpClient("GigaChatJes")
-    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-    {
-        //TODO: remove this and add certificate to store
-        ServerCertificateCustomValidationCallback = (_, _, _, _) => true
-    });
-
 
 builder.Services.Configure<AiApiOptions>(configuration.GetSection("AiApi"));
 builder.Services.Configure<HhApiOptions>(configuration.GetSection("HhApi"));
