@@ -86,7 +86,6 @@ namespace CVAnalyzer.Business.helpers
 
                 cache.Set(analysis.Id.ToString(), result, CacheLifeTime);
                 logger.LogInformation("Analysis {id} added to cache", analysis.Id);
-
             }
             catch (Exception ex)
             {
