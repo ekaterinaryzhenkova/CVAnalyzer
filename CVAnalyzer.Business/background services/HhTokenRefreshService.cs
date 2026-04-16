@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 
 namespace CVAnalyzer.Business.background_services
 {
-    //TODO: добавить таймер и ретрай
     public class HhTokenRefreshService(
         IHhTokenSettings tokenSettings,
         IHhClient client,
@@ -32,34 +31,46 @@ namespace CVAnalyzer.Business.background_services
         
         private async Task RefreshTokenAsync(CancellationToken cancellationToken)
         {
-            try
-            {
-                var request = new HttpRequestMessage(HttpMethod.Post, "token");
-                
-                var collection = new List<KeyValuePair<string, string>>();
-                collection.Add(new("client_id", _apiOptions.ClientId));
-                collection.Add(new("client_secret", _apiOptions.ClientSecret));
-                collection.Add(new("grant_type", "client_credentials"));
-                
-                var content = new FormUrlEncodedContent(collection);
-                
-                request.Content = content;
-                
-                var token = await client.GetTokenAsync(request, cancellationToken);
+            const int retryAttempts = 3;
 
-                if (!string.IsNullOrWhiteSpace(token))
+            for (int attempt = 1; attempt <= retryAttempts; attempt++)
+            {
+                try
                 {
-                    tokenSettings.AccessToken = token;
-                    logger.LogInformation("Token refreshed successfully.");
-                }
-                else
-                {
+                    var request = new HttpRequestMessage(HttpMethod.Post, "token");
+                
+                    var collection = new List<KeyValuePair<string, string>>();
+                    collection.Add(new("client_id", _apiOptions.ClientId));
+                    collection.Add(new("client_secret", _apiOptions.ClientSecret));
+                    collection.Add(new("grant_type", "client_credentials"));
+                
+                    var content = new FormUrlEncodedContent(collection);
+                
+                    request.Content = content;
+                
+                    var token = await client.GetTokenAsync(request, cancellationToken);
+
+                    if (!string.IsNullOrWhiteSpace(token))
+                    {
+                        tokenSettings.AccessToken = token;
+                        logger.LogInformation("Token refreshed successfully.");
+                        return;
+                    }
+                    
                     logger.LogWarning("Token refresh response did not contain a valid token.");
                 }
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error while getting Hh token.");
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "Attempt {Attempt} failed", attempt);
+                    
+                    if (attempt == retryAttempts)
+                    {
+                        logger.LogError("All retry attempts failed.");
+                        return;
+                    }
+
+                    await Task.Delay(TimeSpan.FromMinutes(5), cancellationToken);
+                }
             }
         } 
     }

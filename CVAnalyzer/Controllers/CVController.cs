@@ -1,6 +1,5 @@
 using CVAnalyzer.Business.CV.Interfaces;
 using CVAnalyzer.Helpers;
-using CVAnalyzer.Models.OperationResultResponse;
 using CVAnalyzer.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;

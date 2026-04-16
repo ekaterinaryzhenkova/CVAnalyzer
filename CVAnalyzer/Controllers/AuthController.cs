@@ -1,7 +1,6 @@
 using CVAnalyzer.Business.Auth.Interfaces;
-using CVAnalyzer.Models.OperationResultResponse;
+using CVAnalyzer.Helpers;
 using CVAnalyzer.Models.Requests;
-using CVAnalyzer.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -20,33 +19,39 @@ namespace CVAnalyzer.Controllers
         /// User registration.
         /// </summary>
         [HttpPost("register")]
-        public async Task<OperationResultResponse<LoginResultResponse>> RegisterAsync(
+        public async Task<ActionResult> RegisterAsync(
             [FromServices] IRegisterCommand command,
             [FromBody][Required] RegisterRequest request)
         {
-            return await command.ExecuteAsync(request);
+            var result = await command.ExecuteAsync(request);
+
+            return result.ToActionResult();
         }
 
         /// <summary>
         /// Refresh user token.
         /// </summary>
         [HttpPost("refresh")]
-        public async Task<OperationResultResponse<LoginResultResponse>> RefreshTokenAsync(
+        public async Task<ActionResult> RefreshTokenAsync(
             [FromServices] IRefreshTokenCommand command,
             [FromBody] RefreshRequest refreshToken)
         {
-            return await command.ExecuteAsync(refreshToken);
+            var result = await command.ExecuteAsync(refreshToken);
+            
+            return result.ToActionResult();
         }
         
         /// <summary>
         /// User authentication.
         /// </summary>
         [HttpPost("login")]
-        public async Task<OperationResultResponse<LoginResultResponse>> LoginUserAsync(
+        public async Task<ActionResult> LoginUserAsync(
             [FromServices] ILoginCommand command,
             [FromBody] LoginRequest request)
         {
-            return await command.ExecuteAsync(request);
+            var result = await command.ExecuteAsync(request);
+            
+            return result.ToActionResult();
         }
     }
 }

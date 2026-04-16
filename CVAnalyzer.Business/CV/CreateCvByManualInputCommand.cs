@@ -3,15 +3,18 @@ using CVAnalyzer.DbLayer.Models;
 using CVAnalyzer.Models.OperationResultResponse;
 using CVAnalyzer.Models.Requests;
 using CVAnalyzer.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace CVAnalyzer.Business.CV
 {
     public class CreateCvByManualInputCommand(
         ICvRepository cvRepository,
         IMemoryCache cache,
-        ILogger<CreateCvByManualInputCommand> logger) 
+        ILogger<CreateCvByManualInputCommand> logger,
+        IHttpContextAccessor httpContext) 
         : ICreateCvByManualInputCommand
     {
         private static readonly TimeSpan CacheLifetime = TimeSpan.FromMinutes(25);
@@ -24,10 +27,15 @@ namespace CVAnalyzer.Business.CV
                         "Образование: " + manualCvRequest.Education + "\n" +
                         "О себе: " + manualCvRequest.AboutYourself;
             
-            //TODO: пока без юзер айди, но взять из контекста, если подключить авторизацию
+            string? valueFromContext = httpContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Guid? userId = string.IsNullOrEmpty(valueFromContext) || !Guid.TryParse(valueFromContext, out Guid id)
+                ? null
+                : id;
+
             DbCV dbCv = new DbCV
             {
                 Id = Guid.NewGuid(),
+                UserId = userId,
                 ParsedText = cv
             };
 

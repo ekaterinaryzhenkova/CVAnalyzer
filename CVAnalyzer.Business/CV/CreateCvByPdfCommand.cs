@@ -6,6 +6,7 @@ using CVAnalyzer.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace CVAnalyzer.Business.CV;
 
@@ -13,6 +14,7 @@ public class CreateCvByPdfCommand(
     ICvRepository cvRepository,
     IParseCvHelper parseHelper,
     IMemoryCache cache,
+    IHttpContextAccessor httpContext,
     ILogger<CreateCvByPdfCommand> logger) 
     : ICreateCvByPdfCommand
 {
@@ -29,10 +31,15 @@ public class CreateCvByPdfCommand(
                 ResultStatus.BadRequest);
         }
             
-        //TODO: пока без юзер айди, но взять из контекста, если подключить авторизацию
+        string? valueFromContext = httpContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        Guid? userId = string.IsNullOrEmpty(valueFromContext) || !Guid.TryParse(valueFromContext, out Guid id)
+            ? null
+            : id;
+        
         DbCV dbCv = new DbCV
         {
             Id = Guid.NewGuid(),
+            UserId = userId,
             ParsedText = parsedText
         };
 

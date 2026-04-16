@@ -10,6 +10,8 @@ using CVAnalyzer.Business.CV;
 using CVAnalyzer.Business.CV.Interfaces;
 using CVAnalyzer.Business.helpers;
 using CVAnalyzer.Business.helpers.Interfaces;
+using CVAnalyzer.Business.User;
+using CVAnalyzer.Business.User.Interfaces;
 using CVAnalyzer.DbLayer;
 using CVAnalyzer.DbLayer.Models;
 using CVAnalyzer.Mappers;
@@ -32,6 +34,7 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 builder.Services
+    .AddHttpContextAccessor()
     .AddControllers()
     .AddNewtonsoftJson(options =>
     {
@@ -59,6 +62,7 @@ builder.Services.AddScoped<IRegisterCommand, RegisterCommand>();
 builder.Services.AddScoped<IRefreshTokenCommand, RefreshTokenCommand>();
 builder.Services.AddScoped<ILoginCommand, LoginCommand>();
 builder.Services.AddScoped<IGetAnalysisCommand, GetAnalysisCommand>();
+builder.Services.AddScoped<IGetUserAnalysisCommand, GetUserAnalysisCommand>();
 
 builder.Services.AddScoped<IAnalysisResponseMapper, AnalysisResponseMapper>();
 builder.Services.AddScoped<IDbAnalysisMapper, DbAnalysisMapper>();
