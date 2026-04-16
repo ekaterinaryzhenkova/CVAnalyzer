@@ -1,12 +1,15 @@
 using CVAnalyzer.DbLayer;
 using CVAnalyzer.DbLayer.Models;
+using CVAnalyzer.Mappers.Interfaces;
+using CVAnalyzer.Models.Responses;
 using CVAnalyzer.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace CVAnalyzer.Repositories
 {
     public class CvRepository(
-        CVAnalyzerContext dbContext) 
+        CVAnalyzerContext dbContext,
+        IAnalysisResponseMapper analysisMapper) 
         : ICvRepository
     {
         public async Task<DbCV> CreateAsync(DbCV cv)
@@ -22,6 +25,16 @@ namespace CVAnalyzer.Repositories
             return await dbContext.CVs
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cv => cv.Id == id);
+        }
+        
+        public async Task<List<AnalysisResponse>> GetAnalysisAsync(Guid userId)
+        {
+            return await dbContext.CVs
+                .Include(cv => cv.Analysis)
+                .Where(cv => cv.UserId == userId)
+                .SelectMany(cv => cv.Analysis)
+                .Select(a => analysisMapper.Map(a))
+                .ToListAsync();
         }
     }
 }

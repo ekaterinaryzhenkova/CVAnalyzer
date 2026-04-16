@@ -15,8 +15,8 @@ namespace CVAnalyzer.Business.Auth
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.UniqueName, user.UsersCredentials.Login),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UsersCredentials.Login),
                 new Claim("TokenType", tokenType.ToString())
             };
             

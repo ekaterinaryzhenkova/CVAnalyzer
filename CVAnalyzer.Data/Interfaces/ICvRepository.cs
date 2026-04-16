@@ -1,4 +1,5 @@
 using CVAnalyzer.DbLayer.Models;
+using CVAnalyzer.Models.Responses;
 
 namespace CVAnalyzer.Repositories.Interfaces
 {
@@ -7,5 +8,7 @@ namespace CVAnalyzer.Repositories.Interfaces
         Task<DbCV> CreateAsync(DbCV cv);
 
         Task<DbCV?> GetAsync(Guid id);
+
+        Task<List<AnalysisResponse>> GetAnalysisAsync(Guid userId);
     }
 }

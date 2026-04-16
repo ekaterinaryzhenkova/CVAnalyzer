@@ -57,8 +57,7 @@ namespace CVAnalyzer.DbLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CvId")
-                        .IsUnique();
+                    b.HasIndex("CvId");
 
                     b.ToTable("Analyses");
                 });
@@ -204,8 +203,8 @@ namespace CVAnalyzer.DbLayer.Migrations
             modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbAnalysis", b =>
                 {
                     b.HasOne("CVAnalyzer.DbLayer.Models.DbCV", "CV")
-                        .WithOne("Analysis")
-                        .HasForeignKey("CVAnalyzer.DbLayer.Models.DbAnalysis", "CvId")
+                        .WithMany("Analysis")
+                        .HasForeignKey("CvId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -256,8 +255,7 @@ namespace CVAnalyzer.DbLayer.Migrations
 
             modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbCV", b =>
                 {
-                    b.Navigation("Analysis")
-                        .IsRequired();
+                    b.Navigation("Analysis");
                 });
 
             modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbUser", b =>

@@ -16,8 +16,8 @@ namespace CVAnalyzer.DbLayer.Models
         
         [InverseProperty("CVs")]
         public DbUser User { get; set; }
-        
+
         [InverseProperty("CV")]
-        public DbAnalysis Analysis { get; set; }
+        public List<DbAnalysis> Analysis { get; set; } = [];
     }
 }

@@ -6,6 +6,7 @@ using CVAnalyzer.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace CVAnalyzer.Business.CV
 {
@@ -13,6 +14,7 @@ namespace CVAnalyzer.Business.CV
         ICvRepository cvRepository,
         IParseCvHelper parseHelper,
         IMemoryCache cache,
+        IHttpContextAccessor httpContext,
         ILogger<CreateCvByDocxCommand> logger) 
         : ICreateCvByDocxCommand
     {
@@ -27,11 +29,16 @@ namespace CVAnalyzer.Business.CV
                     "The uploaded file is empty.",
                     ResultStatus.BadRequest);
             }
+
+            string? valueFromContext = httpContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Guid? userId = string.IsNullOrEmpty(valueFromContext) || !Guid.TryParse(valueFromContext, out Guid id)
+                ? null
+                : id;
             
-            //TODO: пока без юзер айди, но взять из контекста, если подключить авторизацию
             DbCV dbCv = new DbCV
             {
                 Id = Guid.NewGuid(),
+                UserId = userId,
                 ParsedText = parsedText
             };
 
