@@ -4,6 +4,7 @@ using CVAnalyzer.DbLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CVAnalyzer.DbLayer.Migrations
 {
     [DbContext(typeof(CVAnalyzerContext))]
-    partial class CVAnalyzerContextModelSnapshot : ModelSnapshot
+    [Migration("20260414174528_UpdateCvs")]
+    partial class UpdateCvs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,9 +58,6 @@ namespace CVAnalyzer.DbLayer.Migrations
                     b.Property<string>("VacancyLink")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("VacancyText")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CvId");
@@ -91,17 +91,16 @@ namespace CVAnalyzer.DbLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("AnalysisId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("AnalysisId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Letters");
                 });
@@ -226,13 +225,13 @@ namespace CVAnalyzer.DbLayer.Migrations
 
             modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbLetter", b =>
                 {
-                    b.HasOne("CVAnalyzer.DbLayer.Models.DbAnalysis", "Analysis")
-                        .WithOne("Letter")
-                        .HasForeignKey("CVAnalyzer.DbLayer.Models.DbLetter", "AnalysisId")
+                    b.HasOne("CVAnalyzer.DbLayer.Models.DbUser", "User")
+                        .WithMany("Letters")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Analysis");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbRefreshToken", b =>
@@ -257,12 +256,6 @@ namespace CVAnalyzer.DbLayer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbAnalysis", b =>
-                {
-                    b.Navigation("Letter")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbCV", b =>
                 {
                     b.Navigation("Analysis");
@@ -271,6 +264,8 @@ namespace CVAnalyzer.DbLayer.Migrations
             modelBuilder.Entity("CVAnalyzer.DbLayer.Models.DbUser", b =>
                 {
                     b.Navigation("CVs");
+
+                    b.Navigation("Letters");
 
                     b.Navigation("RefreshTokens");
 

@@ -10,7 +10,7 @@ namespace CVAnalyzer.Repositories.Interfaces
         
         Task<DbAnalysis?> GetAsync(Guid analysisId);
 
-        Task<AnalysisResponse?> GetAnalasisResponseAsync(Guid analysisId);
+        Task<AnalysisResponse?> GetAnalysisResponseAsync(Guid analysisId);
 
         Task<DbAnalysis?> GetNewAnalysisAsync();
 
@@ -21,11 +21,13 @@ namespace CVAnalyzer.Repositories.Interfaces
             string technologies,
             string relevance,
             string another,
-            string? vacancyComparison = null,
-            string? vacancyLink = null);
+            string? vacancyText = null,
+            string? vacancyComparison = null);
 
         Task<int> UpdateAsync(
             Guid analysisId,
             AnalysisStatus status);
+
+        Task<(string? cvText, string? vacancyText)> GetVacancyAndCvTextAsync(Guid analysisId);
     }
 }

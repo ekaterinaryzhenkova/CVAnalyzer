@@ -21,7 +21,7 @@ namespace CVAnalyzer.Repositories
             return true;
         }
 
-        public async Task<bool> RemoveAsync(List<DbRefreshToken> tokens)
+        public async Task<bool> RemoveAsync(List<DbRefreshToken> tokens, CancellationToken ct)
         {
             if (tokens is null || tokens.Count == 0)
             {
@@ -30,12 +30,12 @@ namespace CVAnalyzer.Repositories
 
             context.RefreshTokens.RemoveRange(tokens);
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(ct);
 
             return true;
         }
 
-        public Task<DbRefreshToken?> GetAsyns(string requestToken)
+        public Task<DbRefreshToken?> GetAsync(string requestToken)
         {
             return context.RefreshTokens
                 .Include(rt => rt.User)
@@ -44,12 +44,12 @@ namespace CVAnalyzer.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public Task<List<DbRefreshToken>> GetExpiredAsync()
+        public Task<List<DbRefreshToken>> GetExpiredAsync(CancellationToken ct)
         {
             return context.RefreshTokens
                 .AsNoTracking()
                 .Where(rt => rt.ExpirationDate < DateTime.UtcNow)
-                .ToListAsync();
+                .ToListAsync(ct);
         }
     }
 }

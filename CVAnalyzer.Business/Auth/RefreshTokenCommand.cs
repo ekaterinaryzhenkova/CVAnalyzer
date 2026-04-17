@@ -15,7 +15,7 @@ namespace CVAnalyzer.Business.Auth
     {
         public async Task<OperationResultResponse<LoginResultResponse>> ExecuteAsync(RefreshRequest request)
         {
-            var token = await refreshTokenRepository.GetAsyns(request.RefreshToken);
+            var token = await refreshTokenRepository.GetAsync(request.RefreshToken);
 
             if (token is null)
             {

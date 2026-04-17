@@ -1,89 +1,73 @@
-using CVAnalyzer.Models;
 using CVAnalyzer.Models.AIClient;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.ComponentModel;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace CVAnalyzer.Business.background_services
+namespace CVAnalyzer.Business.background_services;
+
+public class AiTokenRefreshService(
+    IAiTokenSettings aiToken,
+    IHttpClientFactory httpClientFactory,
+    IOptions<AiApiOptions> options,
+    ILogger<AiTokenRefreshService> logger)
+    : BackgroundService
 {
-    public class AiTokenRefreshService(
-        IAiTokenSettings aiToken,
-        IHttpClientFactory httpClientFactory,
-        IOptions<AiApiOptions> options,
-        ILogger<AiTokenRefreshService> logger)
-        : IHostedService, IDisposable
+    private readonly AiApiOptions _apiOptions = options.Value;
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        private readonly AiApiOptions _apiOptions = options.Value;
-        private Timer _timer;
+        logger.LogInformation("AiTokenRefreshService started");
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        while (!stoppingToken.IsCancellationRequested)
         {
-            logger.LogInformation("TokenRefreshService starting...");
-            
-            _timer = new Timer(async _ => await RefreshTokenAsync(),
-                null,
-                TimeSpan.Zero,   
-                TimeSpan.FromMinutes(25));
+            await RefreshTokenAsync(stoppingToken);
 
-            return Task.CompletedTask;
+            await Task.Delay(TimeSpan.FromMinutes(25), stoppingToken);
         }
+    }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+    private async Task RefreshTokenAsync(CancellationToken token)
+    {
+        try
         {
-            logger.LogInformation("TokenRefreshService stopping...");
+            var client = httpClientFactory.CreateClient("GigaChatJes");
 
-            _timer?.Change(Timeout.Infinite, 0);
-            return Task.CompletedTask;
-        }
+            var request = new HttpRequestMessage(HttpMethod.Post, _apiOptions.TokenUrl);
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", _apiOptions.ClientAuth);
+            request.Headers.Add("RqUID", Guid.NewGuid().ToString());
 
-        public void Dispose()
-        {
-            _timer?.Dispose();
-        }
-        
-        private async Task RefreshTokenAsync()
-        {
-            try
+            request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
             {
-                var client = httpClientFactory.CreateClient("GigaChatJes");
+                { "scope", _apiOptions.Scope }
+            });
 
-                var request = new HttpRequestMessage(HttpMethod.Post, _apiOptions.TokenUrl);
-                request.Headers.Authorization =
-                    new AuthenticationHeaderValue("Bearer", _apiOptions.ClientAuth);
-                request.Headers.Add("RqUID", Guid.NewGuid().ToString());
+            var response = await client.SendAsync(request, token);
+            response.EnsureSuccessStatusCode();
 
-                request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
-                {
-                    { "scope", _apiOptions.Scope }
-                });
+            var json = await response.Content.ReadAsStringAsync(token);
 
-                var response = await client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
+            using var doc = JsonDocument.Parse(json);
 
-                var json = await response.Content.ReadAsStringAsync();
-                using var doc = JsonDocument.Parse(json);
+            var tokenValue = doc.RootElement
+                .GetProperty("access_token")
+                .GetString();
 
-                var token = doc.RootElement
-                    .GetProperty("access_token")
-                    .GetString();
-
-                if (!string.IsNullOrWhiteSpace(token))
-                {
-                    aiToken.AccessToken = token;
-                    logger.LogInformation("Token refreshed successfully.");
-                }
-                else
-                {
-                    logger.LogWarning("Token refresh response did not contain a valid token.");
-                }
-            }
-            catch (Exception ex)
+            if (!string.IsNullOrWhiteSpace(tokenValue))
             {
-                logger.LogError(ex, "Error while refreshing GigaChat token.");
+                aiToken.AccessToken = tokenValue;
+                logger.LogInformation("Token refreshed successfully.");
             }
+        }
+        catch (TaskCanceledException)
+        {
+            logger.LogInformation("Token refresh cancelled");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while refreshing GigaChat token");
         }
     }
 }

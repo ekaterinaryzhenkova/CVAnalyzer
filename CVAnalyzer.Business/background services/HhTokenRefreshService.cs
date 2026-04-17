@@ -11,67 +11,47 @@ namespace CVAnalyzer.Business.background_services
         IHhClient client,
         IOptions<HhApiOptions> options,
         ILogger<HhTokenRefreshService> logger)
-        : IHostedService
+        : BackgroundService
     {
         private readonly HhApiOptions _apiOptions = options.Value;
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            logger.LogInformation("HhTokenRefreshService starting...");
-            
-            await RefreshTokenAsync(cancellationToken);
-        }
+            logger.LogInformation("HhTokenRefreshService started");
 
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            logger.LogInformation("HhTokenRefreshService stopping...");
-
-            return Task.CompletedTask;
-        }
-        
-        private async Task RefreshTokenAsync(CancellationToken cancellationToken)
-        {
-            const int retryAttempts = 3;
-
-            for (int attempt = 1; attempt <= retryAttempts; attempt++)
+            while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
                     var request = new HttpRequestMessage(HttpMethod.Post, "token");
-                
-                    var collection = new List<KeyValuePair<string, string>>();
-                    collection.Add(new("client_id", _apiOptions.ClientId));
-                    collection.Add(new("client_secret", _apiOptions.ClientSecret));
-                    collection.Add(new("grant_type", "client_credentials"));
-                
-                    var content = new FormUrlEncodedContent(collection);
-                
-                    request.Content = content;
-                
-                    var token = await client.GetTokenAsync(request, cancellationToken);
+
+                    request.Content = new FormUrlEncodedContent(new[]
+                    {
+                        new KeyValuePair<string, string>("client_id", _apiOptions.ClientId),
+                        new KeyValuePair<string, string>("client_secret", _apiOptions.ClientSecret),
+                        new KeyValuePair<string, string>("grant_type", "client_credentials")
+                    });
+
+                    var token = await client.GetTokenAsync(request, stoppingToken);
 
                     if (!string.IsNullOrWhiteSpace(token))
                     {
                         tokenSettings.AccessToken = token;
-                        logger.LogInformation("Token refreshed successfully.");
-                        return;
-                    }
-                    
-                    logger.LogWarning("Token refresh response did not contain a valid token.");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogWarning(ex, "Attempt {Attempt} failed", attempt);
-                    
-                    if (attempt == retryAttempts)
-                    {
-                        logger.LogError("All retry attempts failed.");
+
+                        logger.LogInformation("Token successfully received. Stopping retries.");
+
                         return;
                     }
 
-                    await Task.Delay(TimeSpan.FromMinutes(5), cancellationToken);
+                    logger.LogWarning("Token is empty");
                 }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error while getting token");
+                }
+                
+                await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
             }
-        } 
+        }
     }
 }

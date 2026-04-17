@@ -1,9 +1,7 @@
 using CVAnalyzer.Business.Analysis.Interfaces;
 using CVAnalyzer.Helpers;
-using CVAnalyzer.Models.OperationResultResponse;
 using CVAnalyzer.Models.Requests;
 using CVAnalyzer.Models.Responses;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,7 +11,7 @@ namespace CVAnalyzer.Controllers
     /// Vacancies.
     /// </summary>
     [ApiController]
-    [Microsoft.AspNetCore.Mvc.Route("analysis")]
+    [Route("analysis")]
     [Consumes("application/json")]
     [Produces("application/json")]
     public class AnalysisController : ControllerBase
