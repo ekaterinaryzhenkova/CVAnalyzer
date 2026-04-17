@@ -47,8 +47,7 @@ namespace CVAnalyzer.Business.Auth
                 RefreshToken = jwtService.GenerateToken(user, TokenType.Refresh, out double refreshExpiresInMinutes),
                 RefreshTokenExpiresIn = refreshExpiresInMinutes
             };
-            
-            //TODO: add cache later
+
             var refreshToken = new DbRefreshToken
             {
                 Id = Guid.NewGuid(),

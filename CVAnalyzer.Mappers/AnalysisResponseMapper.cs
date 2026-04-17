@@ -23,7 +23,6 @@ public class AnalysisResponseMapper : IAnalysisResponseMapper
     
     public AnalysisResponse Map(DbAnalysis dbAnalysis)
     {
-        //TODO: или изменить модель добавив наллабл или... 
         return new AnalysisResponse
         {
             Structure = dbAnalysis.Structure ?? "Не удалось проанализировать:(",

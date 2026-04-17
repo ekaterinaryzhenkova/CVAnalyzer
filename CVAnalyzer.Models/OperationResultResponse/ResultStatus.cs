@@ -11,6 +11,7 @@ namespace CVAnalyzer.Models.OperationResultResponse
         NotFound,
         BadRequest,
         Unauthorized,
-        InternalServerError
+        InternalServerError,
+        ExternalServerError
     }
 }
