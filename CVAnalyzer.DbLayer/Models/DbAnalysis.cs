@@ -15,7 +15,9 @@ namespace CVAnalyzer.DbLayer.Models
         public Guid CvId { get; set; }
         
         public string? VacancyLink { get; set; }
-        
+
+        public string? VacancyText { get; set; }
+
         public string? Structure { get; set; }
         
         public string? Technologies { get; set; }
@@ -32,5 +34,8 @@ namespace CVAnalyzer.DbLayer.Models
         
         [InverseProperty("Analysis")]
         public DbCV CV { get; set; }
+
+        [InverseProperty("Analysis")]
+        public DbLetter Letter { get; set; }
     }
 }

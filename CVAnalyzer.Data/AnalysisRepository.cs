@@ -27,7 +27,7 @@ namespace CVAnalyzer.Repositories
                 .FirstOrDefaultAsync(a => a.Id == analysisId);
         }
 
-        public async Task<AnalysisResponse?> GetAnalasisResponseAsync(Guid analysisId)
+        public async Task<AnalysisResponse?> GetAnalysisResponseAsync(Guid analysisId)
         {
             return await context.Analyses
                 .Where(a => a.Id == analysisId)
@@ -50,8 +50,8 @@ namespace CVAnalyzer.Repositories
             string technologies,
             string relevance,
             string another,
-            string? vacancyComparison = null,
-            string? vacancyLink = null)
+            string? vacancyText = null,
+            string? vacancyComparison = null)
         {
             var analysis = await context.Analyses.FirstAsync(r => r.Id == analysisId);
 
@@ -62,8 +62,8 @@ namespace CVAnalyzer.Repositories
             analysis.Relevance = relevance;
             analysis.Another = another;
             
-            if (vacancyLink is not null)
-                analysis.VacancyLink = vacancyLink;
+            if (vacancyText is not null)
+                analysis.VacancyText = vacancyText;
             
             if (vacancyComparison is not null)
                 analysis.VacancyComparison = vacancyComparison;
@@ -75,11 +75,33 @@ namespace CVAnalyzer.Repositories
             Guid analysisId,
             AnalysisStatus status)
         {
-            var analysis = await context.Analyses.FirstAsync(r => r.Id == analysisId);
+            var analysis = await context.Analyses.FirstAsync(a => a.Id == analysisId);
 
             analysis.Status = status;
 
             return await context.SaveChangesAsync();
+        }
+        
+        public async Task<string?> GetVacancyTextAsync(Guid analysisId)
+        {
+            return await context.Analyses
+                .Where(a => a.Id == analysisId)
+                .Select(a => a.VacancyText)
+                .FirstAsync();
+        }
+        
+        public async Task<(string? cvText, string? vacancyText)> GetVacancyAndCvTextAsync(Guid analysisId)
+        {
+            var result = await context.Analyses
+                .Where(a => a.Id == analysisId)
+                .Select(a => new
+                {
+                    VacancyText = a.VacancyText,
+                    CvText = a.CV.ParsedText
+                })
+                .FirstOrDefaultAsync();
+
+            return (result?.CvText, result?.VacancyText);
         }
     }
 }

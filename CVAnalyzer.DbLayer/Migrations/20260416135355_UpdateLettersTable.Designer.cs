@@ -4,6 +4,7 @@ using CVAnalyzer.DbLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CVAnalyzer.DbLayer.Migrations
 {
     [DbContext(typeof(CVAnalyzerContext))]
-    partial class CVAnalyzerContextModelSnapshot : ModelSnapshot
+    [Migration("20260416135355_UpdateLettersTable")]
+    partial class UpdateLettersTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,9 +56,6 @@ namespace CVAnalyzer.DbLayer.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VacancyLink")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("VacancyText")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

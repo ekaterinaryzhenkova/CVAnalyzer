@@ -75,6 +75,9 @@ namespace CVAnalyzer.Business.helpers
                 
                 AnalysisResponse result = responseMapper.Map(response);
                 
+                cache.Set(analysis.Id.ToString(), result, CacheLifeTime);
+                logger.LogInformation("Analysis {id} added to cache", analysis.Id);
+                
                 await analysisRepository.UpdateAsync(
                     analysis.Id,
                     AnalysisStatus.Done,
@@ -82,10 +85,8 @@ namespace CVAnalyzer.Business.helpers
                     result.Technologies,
                     result.Relevance,
                     result.Another,
+                    vacancyText,
                     result.VacancyComparison);
-
-                cache.Set(analysis.Id.ToString(), result, CacheLifeTime);
-                logger.LogInformation("Analysis {id} added to cache", analysis.Id);
             }
             catch (Exception ex)
             {

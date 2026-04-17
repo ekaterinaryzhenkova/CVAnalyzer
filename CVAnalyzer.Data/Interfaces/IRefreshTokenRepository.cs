@@ -6,10 +6,10 @@ namespace CVAnalyzer.Repositories.Interfaces
     {
         Task<bool> CreateAsync(DbRefreshToken token);
 
-        Task<bool> RemoveAsync(List<DbRefreshToken> tokens);
+        Task<bool> RemoveAsync(List<DbRefreshToken> tokens, CancellationToken ct);
 
-        Task<DbRefreshToken?> GetAsyns(string requestToken);
+        Task<DbRefreshToken?> GetAsync(string requestToken);
 
-        Task<List<DbRefreshToken>> GetExpiredAsync();
+        Task<List<DbRefreshToken>> GetExpiredAsync(CancellationToken ct);
     }
 }
