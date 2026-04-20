@@ -25,11 +25,41 @@ public class AnalysisResponseMapper : IAnalysisResponseMapper
     {
         return new AnalysisResponse
         {
+            Id = dbAnalysis.Id,
             Structure = dbAnalysis.Structure ?? "Не удалось проанализировать:(",
             Technologies = dbAnalysis.Technologies ?? "Не удалось проанализировать:(",
             Relevance = dbAnalysis.Relevance ?? "Не удалось проанализировать:(",
             Another = dbAnalysis.Another ?? "Не удалось проанализировать:(",
-            VacancyComparison = dbAnalysis.VacancyComparison
+            VacancyComparison = dbAnalysis.VacancyComparison,
+            CreatedAt = dbAnalysis.CreatedAt
+        };
+    }
+    
+    public ComplexAnalysisResponse ComplexAnalysisMap(DbAnalysis dbAnalysis)
+    {
+        var analysis = new AnalysisResponse
+        {
+            Id = dbAnalysis.Id,
+            Structure = dbAnalysis.Structure ?? "Не удалось проанализировать:(",
+            Technologies = dbAnalysis.Technologies ?? "Не удалось проанализировать:(",
+            Relevance = dbAnalysis.Relevance ?? "Не удалось проанализировать:(",
+            Another = dbAnalysis.Another ?? "Не удалось проанализировать:(",
+            VacancyComparison = dbAnalysis.VacancyComparison,
+            CreatedAt = dbAnalysis.CreatedAt
+        };
+        
+        if (dbAnalysis.Letter is not null)
+        {
+            return new ComplexAnalysisResponse
+            {
+                Analysis = analysis,
+                Letter = new LetterResponse(dbAnalysis.Letter.Id, dbAnalysis.Letter.Text)
+            };
+        }
+        
+        return new ComplexAnalysisResponse
+        {
+            Analysis = analysis
         };
     }
 }

@@ -1,4 +1,5 @@
 using CVAnalyzer.Business.Clients.Interfaces;
+using CVAnalyzer.DbLayer.Models;
 using CVAnalyzer.Models.OperationResultResponse;
 using CVAnalyzer.Repositories.Interfaces;
 using CVAnalyzer.Repositories.Services;
@@ -10,6 +11,7 @@ namespace CVAnalyzer.Business.Letter
     public class CreateLetterCommand(
         IPromptService promptService,
         IAnalysisRepository analysisRepository,
+        ILetterRepository letterRepository,
         IAiClient aiClient,
         ILogger<CreateLetterCommand> logger)
         : ICreateLetterCommand
@@ -33,6 +35,14 @@ namespace CVAnalyzer.Business.Letter
             try
             {
                 string letter = await aiClient.CreateLetterAsync(prompt);
+                var dbLetter = new DbLetter()
+                {
+                    Id = Guid.NewGuid(),
+                    AnalysisId = analysisId,
+                    Text = letter
+                };
+                await letterRepository.CreateAsync(dbLetter);
+                
                 return new OperationResultResponse<string>(letter);
             }
             catch (HttpRequestException ex)

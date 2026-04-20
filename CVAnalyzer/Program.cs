@@ -65,6 +65,7 @@ builder.Services.AddScoped<ILoginCommand, LoginCommand>();
 builder.Services.AddScoped<IGetAnalysisCommand, GetAnalysisCommand>();
 builder.Services.AddScoped<IGetUserAnalysisCommand, GetUserAnalysisCommand>();
 builder.Services.AddScoped<ICreateLetterCommand, CreateLetterCommand>();
+builder.Services.AddScoped<IGetUserInfoCommand, GetUserInfoCommand>();
 
 builder.Services.AddScoped<IAnalysisResponseMapper, AnalysisResponseMapper>();
 builder.Services.AddScoped<IDbAnalysisMapper, DbAnalysisMapper>();
@@ -75,6 +76,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAnalysisRepository, AnalysisRepository>();
 builder.Services.AddScoped<IPromptRepository, PromptRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+builder.Services.AddScoped<ILetterRepository, LetterRepository>();
 
 builder.Services.AddScoped<IPromptService, PromptService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
@@ -152,8 +154,7 @@ for (int i = 0; i < 5; i++)
         var db = scope.ServiceProvider.GetRequiredService<CVAnalyzerContext>();
 
         db.Database.Migrate();
-
-        Console.WriteLine("Migrations applied");
+        
         break;
     }
     catch (Exception ex)

@@ -8,5 +8,7 @@ namespace CVAnalyzer.Mappers.Interfaces
         AnalysisResponse Map(string analysis);
 
         AnalysisResponse Map(DbAnalysis dbAnalysis);
+
+        ComplexAnalysisResponse ComplexAnalysisMap(DbAnalysis dbAnalysis);
     }
 }
