@@ -31,9 +31,21 @@ namespace CVAnalyzer.Repositories
         {
             return await dbContext.CVs
                 .Include(cv => cv.Analysis)
+                .ThenInclude(a => a.Letter)
                 .Where(cv => cv.UserId == userId)
                 .SelectMany(cv => cv.Analysis)
                 .Select(a => analysisMapper.Map(a))
+                .ToListAsync();
+        }
+        
+        public async Task<List<ComplexAnalysisResponse>> GetComplexAnalysisAsync(Guid userId)
+        {
+            return await dbContext.CVs
+                .Include(cv => cv.Analysis)
+                .ThenInclude(a => a.Letter)
+                .Where(cv => cv.UserId == userId)
+                .SelectMany(cv => cv.Analysis)
+                .Select(a => analysisMapper.ComplexAnalysisMap(a))
                 .ToListAsync();
         }
     }

@@ -21,7 +21,7 @@ namespace CVAnalyzer.Controllers
         /// </summary>
         [HttpGet("analyses")]
         [Authorize]
-        [ProducesResponseType(typeof(List<AnalysisResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<ComplexAnalysisResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
@@ -30,6 +30,24 @@ namespace CVAnalyzer.Controllers
             [FromQuery][Required] Guid userId)
         {
             var result = await getUserAnalysisCommand.ExecuteAsync(userId);
+            
+            return result.ToActionResult();
+        }
+        
+        /// <summary>
+        /// Get user's info.
+        /// </summary>
+        [HttpGet]
+        [Authorize]
+        [ProducesResponseType(typeof(UserInfo), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> GetAsync(
+            [FromServices] IGetUserInfoCommand getUserInfoCommand,
+            [FromQuery][Required] Guid userId)
+        {
+            var result = await getUserInfoCommand.ExecuteAsync(userId);
             
             return result.ToActionResult();
         }

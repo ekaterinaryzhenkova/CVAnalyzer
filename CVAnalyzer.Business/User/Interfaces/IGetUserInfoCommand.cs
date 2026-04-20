@@ -3,8 +3,8 @@ using CVAnalyzer.Models.Responses;
 
 namespace CVAnalyzer.Business.User.Interfaces
 {
-    public interface IGetUserAnalysisCommand
+    public interface IGetUserInfoCommand
     {
-        Task<OperationResultResponse<List<ComplexAnalysisResponse>>> ExecuteAsync(Guid userId);
+        Task<OperationResultResponse<UserInfo>> ExecuteAsync(Guid userId);
     }
 }

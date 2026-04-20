@@ -45,7 +45,7 @@ namespace CVAnalyzer.Business.Analysis
             {
                 return new OperationResultResponse<AnalysisResponse>(
                     "Analysis is failed",
-                    ResultStatus.Ok); //todo: подумать над статусом
+                    ResultStatus.Ok);
             }
 
             return new OperationResultResponse<AnalysisResponse>(mapper.Map(dbAnalysis));

@@ -13,18 +13,18 @@ namespace CVAnalyzer.Business.User
         ILogger<GetUserAnalysisCommand> logger)
         : IGetUserAnalysisCommand
     {
-        public async Task<OperationResultResponse<List<AnalysisResponse>>> ExecuteAsync(Guid userId)
+        public async Task<OperationResultResponse<List<ComplexAnalysisResponse>>> ExecuteAsync(Guid userId)
         {
-            var analyses = await cvRepository.GetAnalysisAsync(userId);
+            var analyses = await cvRepository.GetComplexAnalysisAsync(userId);
 
             if (!analyses.Any())
             {
-                return new OperationResultResponse<List<AnalysisResponse>>(
+                return new OperationResultResponse<List<ComplexAnalysisResponse>>(
                     "No analysis was found",
                     ResultStatus.NotFound);
             }
             
-            return new OperationResultResponse<List<AnalysisResponse>>(analyses);
+            return new OperationResultResponse<List<ComplexAnalysisResponse>>(analyses);
         }
     }
 }
