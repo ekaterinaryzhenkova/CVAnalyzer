@@ -95,6 +95,5 @@ namespace CVAnalyzer.Business.Clients
 
             return token;
         }
-        
     }
 }

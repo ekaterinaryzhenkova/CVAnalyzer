@@ -24,7 +24,7 @@ namespace CVAnalyzer.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> GetAsync(
+        public async Task<ActionResult> CreateAsync(
             [FromServices] ICreateLetterCommand createLetterCommand,
             [FromQuery][Required] Guid analysisId)
         {
