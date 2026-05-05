@@ -21,12 +21,11 @@ namespace CVAnalyzer.Repositories.Interfaces
             string technologies,
             string relevance,
             string another,
-            string? vacancyText = null,
             string? vacancyComparison = null);
 
-        Task<int> UpdateAsync(
-            Guid analysisId,
-            AnalysisStatus status);
+        Task<int> UpdateAsync(Guid analysisId, AnalysisStatus status);
+
+        Task<int> UpdateAsync(Guid analysisId, string vacancyText);
 
         Task<(string? cvText, string? vacancyText)> GetVacancyAndCvTextAsync(Guid analysisId);
     }

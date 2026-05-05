@@ -50,7 +50,6 @@ namespace CVAnalyzer.Repositories
             string technologies,
             string relevance,
             string another,
-            string? vacancyText = null,
             string? vacancyComparison = null)
         {
             var analysis = await context.Analyses.FirstAsync(r => r.Id == analysisId);
@@ -62,22 +61,26 @@ namespace CVAnalyzer.Repositories
             analysis.Relevance = relevance;
             analysis.Another = another;
             
-            if (vacancyText is not null)
-                analysis.VacancyText = vacancyText;
-            
             if (vacancyComparison is not null)
                 analysis.VacancyComparison = vacancyComparison;
 
             return await context.SaveChangesAsync();
         }
         
-        public async Task<int> UpdateAsync(
-            Guid analysisId,
-            AnalysisStatus status)
+        public async Task<int> UpdateAsync(Guid analysisId, AnalysisStatus status)
         {
             var analysis = await context.Analyses.FirstAsync(a => a.Id == analysisId);
 
             analysis.Status = status;
+
+            return await context.SaveChangesAsync();
+        }
+        
+        public async Task<int> UpdateAsync(Guid analysisId, string vacancyText)
+        {
+            var analysis = await context.Analyses.FirstAsync(a => a.Id == analysisId);
+
+            analysis.VacancyText = vacancyText;
 
             return await context.SaveChangesAsync();
         }

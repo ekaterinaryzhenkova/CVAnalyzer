@@ -49,6 +49,8 @@ namespace CVAnalyzer.Business.helpers
             string vacancyText = analysis.VacancyLink is null
                 ? string.Empty
                 : await ParseVacancyText(analysis.VacancyLink);
+
+            await analysisRepository.UpdateAsync(analysis.Id, vacancyText);
             
             string prompt;
             if (string.IsNullOrEmpty(vacancyText))
@@ -85,7 +87,6 @@ namespace CVAnalyzer.Business.helpers
                     result.Technologies,
                     result.Relevance,
                     result.Another,
-                    vacancyText,
                     result.VacancyComparison);
             }
             catch (Exception ex)

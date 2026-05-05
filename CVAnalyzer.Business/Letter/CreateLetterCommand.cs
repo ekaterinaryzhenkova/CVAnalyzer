@@ -34,7 +34,7 @@ namespace CVAnalyzer.Business.Letter
 
             try
             {
-                string letter = await aiClient.CreateLetterAsync(prompt);
+                string letter = await aiClient.CreateLetterAsync(prompt); //вот здесь надо положить письмо в очередь
                 var dbLetter = new DbLetter()
                 {
                     Id = Guid.NewGuid(),
