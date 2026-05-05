@@ -45,8 +45,8 @@ namespace CVAnalyzer.Repositories
                 .ThenInclude(a => a.Letter)
                 .Where(cv => cv.UserId == userId)
                 .SelectMany(cv => cv.Analysis)
+                .OrderBy(a => a.CreatedAt)
                 .Select(a => analysisMapper.ComplexAnalysisMap(a))
-                .OrderBy(a => a.Analysis.CreatedAt)
                 .ToListAsync();
         }
     }
