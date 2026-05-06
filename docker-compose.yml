@@ -25,6 +25,13 @@
       - mssql_data:/var/opt/mssql
 
     platform: linux/amd64
+    
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: report-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
 volumes:
   mssql_data:
