@@ -19,7 +19,7 @@ namespace CVAnalyzer.Business.Analysis
         IAnalysisRepository analysisRepository,
         ICvRepository cvRepository,
         IMemoryCache cache,
-        ILogger<ICreateAnalysisService> logger)
+        ILogger<CreateAnalysisService> logger)
         : ICreateAnalysisService
     {
         private static readonly TimeSpan CacheLifeTime = TimeSpan.FromMinutes(25);

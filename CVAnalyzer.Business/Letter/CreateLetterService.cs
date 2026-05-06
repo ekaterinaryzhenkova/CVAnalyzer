@@ -13,7 +13,7 @@ namespace CVAnalyzer.Business.Letter
         IAiClient aiClient,
         IAnalysisRepository analysisRepository,
         ILetterRepository letterRepository,
-        ILogger<ICreateLetterService> logger)
+        ILogger<CreateLetterService> logger)
         : ICreateLetterService
     {
         public async Task ExecuteAsync(Guid letterId)
