@@ -1,3 +1,4 @@
+using CVAnalyzer.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -13,7 +14,9 @@ namespace CVAnalyzer.DbLayer.Models
         [ForeignKey("Analysis")]
         public Guid AnalysisId { get; set; }
         
-        public string Text { get; set; }
+        public string? Text { get; set; }
+        
+        public LetterStatus Status { get; set; }
         
         [InverseProperty("Letter")]
         public DbAnalysis Analysis { get; set; }

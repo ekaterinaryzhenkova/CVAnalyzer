@@ -36,6 +36,8 @@ namespace CVAnalyzer.Controllers
         /// </summary>
         [HttpGet]
         [ProducesResponseType(typeof(AnalysisResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status202Accepted)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> GetAsync(
             [FromServices] IGetAnalysisCommand getAnalysisCommand,

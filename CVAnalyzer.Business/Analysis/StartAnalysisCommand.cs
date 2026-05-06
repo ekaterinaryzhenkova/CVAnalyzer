@@ -4,8 +4,10 @@ using CVAnalyzer.Business.helpers.Interfaces;
 using CVAnalyzer.DbLayer.Models;
 using CVAnalyzer.Models;
 using CVAnalyzer.Models.OperationResultResponse;
+using CVAnalyzer.Models.RabbitMq;
 using CVAnalyzer.Models.Requests;
 using CVAnalyzer.Repositories.Interfaces;
+using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -13,8 +15,7 @@ namespace CVAnalyzer.Business.Analysis
 {
     public class StartAnalysisCommand(
         IAnalysisRepository analysisRepository,
-        IServiceScopeFactory scopeFactory,
-        IBackgroundTaskQueue taskQueue,
+        IPublishEndpoint publishEndpoint,
         ILogger<StartAnalysisCommand> logger)
         : IStartAnalysisCommand
     {
@@ -41,14 +42,7 @@ namespace CVAnalyzer.Business.Analysis
                     ResultStatus.InternalServerError);
             }
             
-            taskQueue.EnqueueTask(async () =>
-            {
-                using var scope = scopeFactory.CreateScope();
-
-                var helper = scope.ServiceProvider.GetRequiredService<ICreateAnalysisHelper>();
-
-                await helper.ExecuteAsync();
-            });
+            await publishEndpoint.Publish(new CreateAnalysisMessage(analysis.Id));
             
             return new OperationResultResponse<Guid>(analysis.Id);
         }

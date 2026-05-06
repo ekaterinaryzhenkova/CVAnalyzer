@@ -1,5 +1,5 @@
+using CVAnalyzer.Business.Analysis.Interfaces;
 using CVAnalyzer.Business.Clients.Interfaces;
-using CVAnalyzer.Business.helpers.Interfaces;
 using CVAnalyzer.DbLayer.Models;
 using CVAnalyzer.Mappers.Interfaces;
 using CVAnalyzer.Models;
@@ -9,9 +9,9 @@ using CVAnalyzer.Repositories.Services;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
-namespace CVAnalyzer.Business.helpers
+namespace CVAnalyzer.Business.Analysis
 {
-    public class CreateAnalysisHelper(
+    public class CreateAnalysisService(
         IHhClient hhClient,
         IPromptService promptService,
         IAnalysisResponseMapper responseMapper,
@@ -19,18 +19,24 @@ namespace CVAnalyzer.Business.helpers
         IAnalysisRepository analysisRepository,
         ICvRepository cvRepository,
         IMemoryCache cache,
-        ILogger<ICreateAnalysisHelper> logger)
-        : ICreateAnalysisHelper
+        ILogger<ICreateAnalysisService> logger)
+        : ICreateAnalysisService
     {
         private static readonly TimeSpan CacheLifeTime = TimeSpan.FromMinutes(25);
         
-        public async Task ExecuteAsync()
+        public async Task ExecuteAsync(Guid analysisId)
         {
-            var analysis = await analysisRepository.GetNewAnalysisAsync();
+            var analysis = await analysisRepository.GetAsync(analysisId);
 
             if (analysis is null)
             {
-                logger.LogInformation("No new analyses found");
+                logger.LogInformation("No analyses was found");
+                return;
+            }
+
+            if (analysis.Status == AnalysisStatus.Done)
+            {
+                logger.LogInformation("Analyses already finished.");
                 return;
             }
 

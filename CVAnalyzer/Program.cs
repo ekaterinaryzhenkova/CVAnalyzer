@@ -4,6 +4,7 @@ using CVAnalyzer.Business.Auth;
 using CVAnalyzer.Business.Auth.Interfaces;
 using CVAnalyzer.Business.background_services;
 using CVAnalyzer.Business.background_services.Interfaces;
+using CVAnalyzer.Business.broker;
 using CVAnalyzer.Business.Clients;
 using CVAnalyzer.Business.Clients.Interfaces;
 using CVAnalyzer.Business.CV;
@@ -11,6 +12,7 @@ using CVAnalyzer.Business.CV.Interfaces;
 using CVAnalyzer.Business.helpers;
 using CVAnalyzer.Business.helpers.Interfaces;
 using CVAnalyzer.Business.Letter;
+using CVAnalyzer.Business.Letter.Interfaces;
 using CVAnalyzer.Business.User;
 using CVAnalyzer.Business.User.Interfaces;
 using CVAnalyzer.DbLayer;
@@ -19,10 +21,12 @@ using CVAnalyzer.Mappers;
 using CVAnalyzer.Mappers.Interfaces;
 using CVAnalyzer.Models.AIClient;
 using CVAnalyzer.Models.HhClient;
+using CVAnalyzer.Models.RabbitMq;
 using CVAnalyzer.Models.Token;
 using CVAnalyzer.Repositories;
 using CVAnalyzer.Repositories.Interfaces;
 using CVAnalyzer.Repositories.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +34,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using System.Text;
+using CreateAnalysisService = CVAnalyzer.Business.Analysis.CreateAnalysisService;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -66,10 +71,12 @@ builder.Services.AddScoped<IGetAnalysisCommand, GetAnalysisCommand>();
 builder.Services.AddScoped<IGetUserAnalysisCommand, GetUserAnalysisCommand>();
 builder.Services.AddScoped<ICreateLetterCommand, CreateLetterCommand>();
 builder.Services.AddScoped<IGetUserInfoCommand, GetUserInfoCommand>();
+builder.Services.AddScoped<IGetLetterCommand, GetLetterCommand>();
 
 builder.Services.AddScoped<IAnalysisResponseMapper, AnalysisResponseMapper>();
 builder.Services.AddScoped<IDbAnalysisMapper, DbAnalysisMapper>();
 builder.Services.AddScoped<IDbUserMapper, DbUserMapper>();
+builder.Services.AddScoped<ILetterResponseMapper, LetterResponseMapper>();
 
 builder.Services.AddScoped<ICvRepository, CvRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -82,7 +89,8 @@ builder.Services.AddScoped<IPromptService, PromptService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
 builder.Services.AddSingleton<IParseCvHelper, ParseCvHelper>();
-builder.Services.AddScoped<ICreateAnalysisHelper, CreateAnalysisHelper>();
+builder.Services.AddScoped<ICreateAnalysisService, CreateAnalysisService>();
+builder.Services.AddScoped<ICreateLetterService, CreateLetterService>();
 
 builder.Services.AddHttpClient<IAiClient, AiClient>();
 
@@ -95,6 +103,7 @@ builder.Services.AddHttpClient<IHhClient, HhClient>(client =>
 builder.Services.Configure<AiApiOptions>(configuration.GetSection("AiApi"));
 builder.Services.Configure<HhApiOptions>(configuration.GetSection("HhApi"));
 builder.Services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
+builder.Services.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMq"));
 
 var jwtOptions = configuration.GetSection("Jwt").Get<JwtOptions>();
 var key = Encoding.UTF8.GetBytes(jwtOptions.Key);
@@ -133,12 +142,40 @@ builder.Services.AddDbContext<CVAnalyzerContext>(options =>
     options.UseSqlServer(dbConnStr);
 });
 
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<AiConsumer>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        var rabbitMqOptions = configuration.GetSection("RabbitMq").Get<RabbitMqOptions>();
+        
+        cfg.Host(rabbitMqOptions.Host, "/", h =>
+        {
+            h.Username(rabbitMqOptions.UserName);
+            h.Password(rabbitMqOptions.Password);
+        });
+
+        cfg.ReceiveEndpoint("ai-request-queue", e =>
+        {
+            e.PrefetchCount = 1;
+
+            e.ConcurrentMessageLimit = 1;
+
+            e.UseMessageRetry(r =>
+                r.Interval(3, TimeSpan.FromSeconds(3)));
+
+            e.ConfigureConsumer<AiConsumer>(context);
+        });
+    });
+});
+
 builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
 builder.Services.AddHostedService<AiTokenRefreshService>();
 builder.Services.AddHostedService<HhTokenRefreshService>();
 builder.Services.AddHostedService<RefreshTokenRemovalService>();
-builder.Services.AddHostedService<CreateAnalysisService>();
+builder.Services.AddHostedService<CVAnalyzer.Business.background_services.CreateAnalysisService>();
 
 builder.Services.AddSingleton<IAiTokenSettings, AiTokenSettings>();
 builder.Services.AddSingleton<IHhTokenSettings, HhTokenSettings>();

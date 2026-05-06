@@ -34,4 +34,9 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="MassTransit" Version="8.5.8" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.8" />
+    </ItemGroup>
+
 </Project>
